@@ -1,0 +1,100 @@
+#!/usr/bin/env ruby
+require 'gli'
+require 'alpaca'
+require 'alpaca/solution'
+
+include GLI::App
+
+program_desc 'Custom build tool'
+
+version Alpaca::VERSION
+
+subcommand_option_handling :normal
+arguments :strict
+
+desc 'Initialize new solution'
+arg_name 'Describe arguments to init here'
+command :init do |c|
+  c.desc 'Describe a switch to init'
+  c.switch :s
+
+  c.desc 'Describe a flag to init'
+  c.default_value 'default'
+  c.flag :f
+  c.action do |global_options, options, args|
+    puts "init command ran with #{global_options}, #{options}, #{args}"
+  end
+end
+
+desc 'Compile solution'
+arg_name 'Describe arguments to compile here'
+command :compile do |c|
+  c.desc 'Build solution in Debug mode'
+  c.switch :d
+
+  c.desc 'Solution file[s]'
+  c.default_value '**/*.sln'
+  c.flag :s, :solution
+
+  c.action do |options, _args|
+    conf = (:Debug if options[:d]) || :Release
+    puts "compiling in #{conf} mod"
+    patern = options[:solution]
+    Dir.glob(patern).each do |f|
+      puts f
+      s = Alpaca::Solution.new(f)
+      puts s.to_s
+      s.compile conf
+    end
+  end
+end
+
+desc 'Test solution'
+arg_name 'Describe arguments to test here'
+command :test do |c|
+  c.action do
+    puts 'test command ran'
+  end
+end
+
+desc 'Describe pack here'
+arg_name 'Describe arguments to pack here'
+command :pack do |c|
+  c.action do
+    puts 'pack command ran'
+  end
+end
+
+desc 'Describe push here'
+arg_name 'Describe arguments to push here'
+command :push do |c|
+  c.action do
+    puts 'push command ran'
+  end
+end
+
+desc 'Describe promote here'
+arg_name 'Describe arguments to promote here'
+command :promote do |c|
+  c.action do
+    puts 'promote command ran'
+  end
+end
+
+desc 'Describe log here'
+arg_name 'Describe arguments to log here'
+command :log do |c|
+  c.action do
+    puts 'log command ran'
+  end
+end
+
+desc 'Describe review here'
+arg_name 'Describe arguments to review here'
+command :review do |c|
+  c.action do
+    puts 'review command ran'
+  end
+end
+
+exit run(ARGV)

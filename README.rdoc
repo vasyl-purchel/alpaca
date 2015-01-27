@@ -1,0 +1,6 @@
+= alpaca
+
+Describe your project here
+
+:include:alpaca.rdoc
+

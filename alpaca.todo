@@ -1,0 +1,43 @@
+tasks:
+ ☐ nuget_restore
+ ☐ nuget_pack
+ ☐ nuget_install
+ ☐ nuget_promote
+
+ ☐ artifactory_get_release_notes_and_version
+ ☐ git_find_changes
+ ☐ git_discard_changes
+
+ ☐ solution_compile
+ ☐ solution_unit_test (+reports)
+ ☐ solution_service_test (+reports)
+
+ ☐ versioning
+
+ ☐ gerrit_review
+
+ ☐ jenkins_environment
+
+build: 
+  nuget_restore
+  compile
+  unit_test
+build-ST:
+  nuget_restore
+  compile
+  unit_test
+  service_test
+build-package:
+  update_version
+  compile
+  discard_versioning_git_changes
+  create_nuget_package
+  push_nuget_package
+  create_environment_file
+
+
+RUBYLIB=lib bin/alpaca help
+RUBYLIB=besttoolever/alpaca/lib besttoolever/alpaca/bin/alpaca compile --solution=cashinworldpay/src/Wonga.CashIn.WorldPay.sln
+
+bundle exec ruby bin/alpaca help
+ bundle exec rake features

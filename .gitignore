@@ -1,0 +1,19 @@
+*.gem
+/pkg/
+/reports/
+/tmp/
+
+## Specific to VisualStudio test data:
+[Dd]ebug
+[Rr]elease
+[Oo]bj
+
+## Documentation cache and generated files:
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
+
+## Environment normalisation:
+/.bundle/
+/lib/bundler/man/
