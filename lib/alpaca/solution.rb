@@ -1,7 +1,7 @@
 module Alpaca
   # some description for solution
   class Solution
-    attr_accessor :file
+    attr_accessor :file, :build_tool
 
     def initialize(file, netversion = :net45)
       @file = file
@@ -35,18 +35,18 @@ module Alpaca
     end
 
     def exe
-      @exe = 'MSBuild.exe'
+      'MSBuild.exe'
     end
 
     def old_net(version)
-      File.join(win_dir.dup, 'Microsoft.NET', 'Framework', version, @exe)
+      File.join(win_dir.dup, 'Microsoft.NET', 'Framework', version, exe)
     end
 
     def new_net(version)
       if File.exist?('C:\Program Files (x86)\MSBuild')
-        File.join('c:\Program Files (x86)\MSBuild', version, 'Bin', @exe)
+        File.join('C:\Program Files (x86)\MSBuild', version, 'Bin', exe)
       elsif File.exist?('C:\Program Files\MSBuild')
-        File.join('c:\Program Files (x86)\MSBuild', version, 'Bin', @exe)
+        File.join('C:\Program Files\MSBuild', version, 'Bin', exe)
       else
         fail "Don't have MSBuild for version #{version}"
       end
@@ -69,6 +69,7 @@ module Alpaca
       else
         @exe = old_net(get_old_net_version(netversion))
       end
+      @exe = File.expand_path(@exe)
     end
 
     def to_s

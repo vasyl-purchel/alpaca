@@ -7,6 +7,7 @@
 [Dd]ebug
 [Rr]elease
 [Oo]bj
+*.suo
 
 ## Documentation cache and generated files:
 /.yardoc/
