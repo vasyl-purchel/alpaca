@@ -5,7 +5,7 @@ module Alpaca
 
     def initialize(file, netversion = :net45)
       @file = file
-      @build_tool = MSBuild.new netversion
+      @build_tool = MSBuild2.new netversion
     end
 
     def to_s
@@ -27,7 +27,7 @@ module Alpaca
   end
 
   # this also must be documented
-  class MSBuild
+  class MSBuild2
     attr_accessor :verbosity, :targets, :properties
 
     def win_dir
@@ -58,8 +58,7 @@ module Alpaca
       when :net30 then 'v3.0'
       when :net35 then 'v3.5'
       when :net4, :net40 then 'v4.0.30319'
-      else
-        fail "Don't know version #{version}"
+      else fail "Don't know version #{version}"
       end
     end
 

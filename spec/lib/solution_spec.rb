@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../lib/alpaca/solution'
 
 describe Alpaca::Solution do
   describe '#new' do
@@ -18,7 +18,7 @@ describe Alpaca::Solution do
       end
 
       it 'returns MSBuild for .net 4.5 as build_tool' do
-        expect(@sln.build_tool).to be_an_instance_of Alpaca::MSBuild
+        expect(@sln.build_tool).to be_an_instance_of Alpaca::MSBuild2
         expect(@sln.build_tool.to_s).to eq @build_tool
       end
     end
@@ -43,7 +43,7 @@ describe Alpaca::Solution do
       end
 
       it "returns MSBuild for .net #{@version} as build_tool" do
-        expect(@sln.build_tool).to be_an_instance_of Alpaca::MSBuild
+        expect(@sln.build_tool).to be_an_instance_of Alpaca::MSBuild2
         expect(@sln.build_tool.to_s).to eq @build_tool
       end
     end

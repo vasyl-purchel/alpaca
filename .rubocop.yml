@@ -1,3 +1,9 @@
 Lint/Eval:
   Exclude:
     - 'Rakefile'
+AllCops:
+  Exclude:
+    - 'features/*'
+Style/Documentation:
+  Exclude:
+    - 'spec/*'
