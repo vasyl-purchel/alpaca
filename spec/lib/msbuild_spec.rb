@@ -1,4 +1,5 @@
 require_relative '../../lib/alpaca/msbuild'
+require_relative '../../lib/alpaca/msbuildconfig'
 require_relative 'spec_helper'
 
 module TestCases
@@ -117,6 +118,92 @@ describe Alpaca::MSBuild do
 
       it 'then fails with RuntimeError' do
         expect { subject.executable }.to raise_error
+      end
+    end
+  end
+
+  describe Alpaca::MSBuild::Config do
+    let(:file) { 'src/TestSolution.sln' }
+    describe '#new' do
+      context 'when only file passed as a parameter' do
+        subject { Alpaca::MSBuild::Config.new(file) }
+        it 'then creates new MSBuild::Config object' do
+          expect(subject).to be_an_instance_of(Alpaca::MSBuild::Config)
+        end
+
+        it 'then set @file to test solution file' do
+          expect(subject.file).to be(file)
+        end
+      end
+
+      context 'when file passed with a block as a parameter' do
+        subject do
+          Alpaca::MSBuild::Config.new(file) do |c|
+            c.verbosity = 'minimal'
+            c.properties = { 'Configuration' => 'Debug' }
+            c.targets = %w(Clean Rebuild)
+          end
+        end
+
+        it 'then creates new MSBuild::Config object' do
+          expect(subject).to be_an_instance_of(Alpaca::MSBuild::Config)
+        end
+
+        it 'then set @file to test solution file' do
+          expect(subject.file).to be(file)
+        end
+
+        it 'then set @verbosity to be minimal' do
+          expect(subject.verbosity).to eq('minimal')
+        end
+
+        it 'then set @targets to be minimal' do
+          expect(subject.targets).to eq(%w(Clean Rebuild))
+        end
+      end
+    end
+
+    describe '#args' do
+      context 'when verbosity, properties and targets are set' do
+        subject do
+          Alpaca::MSBuild::Config.new(file) do |c|
+            c.verbosity = 'minimal'
+            c.properties = { 'Configuration' => 'Debug' }
+            c.targets = %w(Clean Rebuild)
+          end
+        end
+
+        it 'returns array of argumens for MSBuild.exe' do
+          expect(subject.args).to be_an_instance_of(Array)
+        end
+
+        it 'returns array that include verbosity' do
+          expect(subject.args).to include('/v:minimal')
+        end
+
+        it 'returns array that include properties' do
+          expect(subject.args).to include('/property:Configuration=Debug')
+        end
+
+        it 'returns array that include targets' do
+          expect(subject.args).to include('/t:Clean;Rebuild')
+        end
+      end
+    end
+
+    describe '#to_s' do
+      let(:result) do
+        file + ' /v:minimal /t:Clean;Rebuild /property:Configuration=Debug'
+      end
+      subject do
+        Alpaca::MSBuild::Config.new(file) do |c|
+          c.verbosity = 'minimal'
+          c.properties = { 'Configuration' => 'Debug' }
+          c.targets = %w(Clean Rebuild)
+        end
+      end
+      it 'returns all #args with space delimeter' do
+        expect(subject.to_s).to eq(result)
       end
     end
   end

@@ -18,7 +18,6 @@ describe Alpaca::Solution do
       end
 
       it 'returns MSBuild for .net 4.5 as build_tool' do
-        expect(@sln.build_tool).to be_an_instance_of Alpaca::MSBuild2
         expect(@sln.build_tool.to_s).to eq @build_tool
       end
     end
@@ -43,7 +42,6 @@ describe Alpaca::Solution do
       end
 
       it "returns MSBuild for .net #{@version} as build_tool" do
-        expect(@sln.build_tool).to be_an_instance_of Alpaca::MSBuild2
         expect(@sln.build_tool.to_s).to eq @build_tool
       end
     end
@@ -53,11 +51,11 @@ describe Alpaca::Solution do
     context 'without any parameters' do
       it 'builds solution in Release mode' do
         @sln = Alpaca::Solution.new 'spec/test_data/TestSolution.sln'
-        expect(@sln.build_tool).to receive(:system).with(
+        expect(@sln).to receive(:system).with(
           'C:/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe',
           'spec/test_data/TestSolution.sln',
-          '/verbosity:minimal',
-          '/target:Clean;Rebuild',
+          '/v:minimal',
+          '/t:Clean;Rebuild',
           '/property:Configuration=Release')
         @sln.compile
       end
