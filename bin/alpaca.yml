@@ -1,0 +1,7 @@
+MSBuild:
+  - targets: ["Clean", "Redeploy"]
+    verbosity: "detailed"
+    no_logo: true
+    properties:
+      DebugSymbols: false
+      DebugType: 'None'

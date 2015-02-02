@@ -2,6 +2,7 @@
 require 'gli'
 require 'alpaca'
 require 'alpaca/solution'
+require 'yaml'
 
 include GLI::App
 
@@ -36,15 +37,21 @@ command :compile do |c|
   c.default_value '**/*.sln'
   c.flag :s, :solution
 
-  c.action do |options, _args|
-    conf = (:Debug if options[:d]) || :Release
-    puts "compiling in #{conf} mod"
+  c.action do |_global_options, options, _args|
+    conf = ('Debug' if options[:d]) || 'Release'
     patern = options[:solution]
+    my_yml = YAML.load(File.open('alpaca.yml'))
     Dir.glob(patern).each do |f|
       puts f
       s = Alpaca::Solution.new(f)
-      puts s.to_s
-      s.compile conf
+      s.compile do |c|
+        my_yml.each do |key, value|
+          setter = "#{key}="
+          self.class.send(:attr_accessor, key) unless respond_to?(setter)
+          send setter, value
+        end
+        c.properties['Configuration'] = conf
+      end
     end
   end
 end

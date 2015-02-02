@@ -1,3 +1,5 @@
+require 'bundler/setup'
+require 'bundler/gem_tasks'
 require 'rake/clean'
 require 'rubygems'
 require 'rubygems/package_task'
@@ -10,8 +12,8 @@ Rake::RDocTask.new do |rd|
   rd.title = 'Alpaca'
 end
 
-spec = eval(File.read('alpaca.gemspec'))
-Gem::PackageTask.new(spec)
+Bundler.setup
+Bundler::GemHelper.install_tasks
 
 CUKE_RESULTS = 'results.html'
 CLEAN << CUKE_RESULTS
