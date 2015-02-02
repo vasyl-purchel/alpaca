@@ -1,63 +1,164 @@
 require_relative '../../lib/alpaca/solution'
 
 describe Alpaca::Solution do
+  let(:sln) do
+    {
+      file: 'spec/test_data/TestSolution.sln',
+      file_path: File.expand_path('spec/test_data/TestSolution.sln'),
+      format_version: '12.00',
+      vs_version: '12.0.30723.0',
+      min_vs_version: '10.0.40219.1',
+      project: {
+        id: '{B9BAB17F-FD42-452B-8DE3-A85254043711}',
+        name: 'TestSolution',
+        file: 'TestSolution\TestSolution.csproj'
+      }
+    }
+  end
+
   describe '#new' do
     context 'When only solution file passed as argument' do
-      before :all do
-        @sln_file = 'spec/test_data/TestSolution.sln'
-        @build_tool = 'C:/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe'
-        @sln = Alpaca::Solution.new @sln_file
-      end
+      subject { Alpaca::Solution.new sln[:file] }
 
       it 'returns Solution object' do
-        expect(@sln).to be_an_instance_of Alpaca::Solution
+        expect(subject).to be_an_instance_of Alpaca::Solution
       end
 
-      it 'returns solution file inside' do
-        expect(@sln.file).to eq @sln_file
+      it 'returns object with solution file' do
+        expect(subject.file).to eq sln[:file_path]
       end
 
-      it 'returns MSBuild for .net 4.5 as build_tool' do
-        expect(@sln.build_tool.to_s).to eq @build_tool
+      it 'returns object with .Net Framework 4.5.1' do
+        expect(subject.net_version).to eq :net451
+      end
+
+      it 'returns object with project from solution' do
+        expect(subject.projects).to eq [sln[:project]]
+      end
+
+      it 'returns object with solution format version' do
+        expect(subject.format_version).to eq sln[:format_version]
+      end
+
+      it 'returns object with visual studio version' do
+        expect(subject.visual_studio_version).to eq sln[:vs_version]
+      end
+
+      it 'returns object with minimum visual studio version' do
+        expect(subject.minimum_visual_studio_version)
+          .to eq sln[:min_vs_version]
       end
     end
 
     context 'When solution file and .net version passed as arguments' do
-      before :all do
-        @version = :net40
-        @path_version = 'v4.0.30319'
-
-        @sln_file = 'spec/test_data/TestSolution.sln'
-        @old_path = 'C:/WINDOWS/Microsoft.NET/Framework/'
-        @build_tool = @old_path + @path_version + '/MSBuild.exe'
-        @sln = Alpaca::Solution.new @sln_file, @version
-      end
+      let(:net_version) { :net40 }
+      subject { Alpaca::Solution.new sln[:file], net_version }
 
       it 'returns Solution object' do
-        expect(@sln).to be_an_instance_of Alpaca::Solution
+        expect(subject).to be_an_instance_of Alpaca::Solution
       end
 
-      it 'returns solution file inside' do
-        expect(@sln.file).to eq @sln_file
+      it 'returns object with solution file' do
+        expect(subject.file).to eq sln[:file_path]
       end
 
-      it "returns MSBuild for .net #{@version} as build_tool" do
-        expect(@sln.build_tool.to_s).to eq @build_tool
+      it 'returns object with .Net Framework 4.0' do
+        expect(subject.net_version).to eq :net40
+      end
+
+      it 'returns object with project from solution' do
+        expect(subject.projects).to eq [sln[:project]]
+      end
+
+      it 'returns object with solution format version' do
+        expect(subject.format_version).to eq sln[:format_version]
+      end
+
+      it 'returns object with visual studio version' do
+        expect(subject.visual_studio_version).to eq sln[:vs_version]
+      end
+
+      it 'returns object with minimum visual studio version' do
+        expect(subject.minimum_visual_studio_version)
+          .to eq sln[:min_vs_version]
+      end
+    end
+
+    context 'When solution file does not exists' do
+      subject { Alpaca::Solution.new 'ghost.sln' }
+
+      it 'then fails with RuntimeError' do
+        expect { subject }.to raise_error
       end
     end
   end
 
   describe '#compile' do
+    let(:tool) { 'C:/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe' }
+    subject { Alpaca::Solution.new sln[:file], :net45 }
+    before :each do
+      allow(Alpaca::MSBuild)
+        .to receive(:executable)
+        .with(:net45)
+        .and_return(tool)
+    end
+
     context 'without any parameters' do
-      it 'builds solution in Release mode' do
-        @sln = Alpaca::Solution.new 'spec/test_data/TestSolution.sln'
-        expect(@sln).to receive(:system).with(
-          'C:/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe',
-          'spec/test_data/TestSolution.sln',
-          '/v:minimal',
-          '/t:Clean;Rebuild',
-          '/property:Configuration=Release')
-        @sln.compile
+      it 'rebuilds solution with default configuration' do
+        expect(subject).to receive(:system).with(tool, sln[:file_path])
+        subject.compile
+      end
+    end
+
+    context 'with Debug mode as a parameter' do
+      it 'rebuilds solution in debug mode' do
+        expect(subject).to receive(:system).with(
+          tool,
+          sln[:file_path],
+          '/property:Configuration=Debug')
+        subject.compile 'Debug'
+      end
+    end
+
+    context 'with block' do
+      it 'builds solution with specific parameters' do
+        expect(subject).to receive(:system)
+          .with(tool, sln[:file_path], '/nologo', '/t:Build')
+        subject.compile do |conf|
+          conf.no_logo = true
+          conf.targets = %w(Build)
+        end
+      end
+    end
+
+    context 'with block and Debug mode as a parameter' do
+      it 'builds solution with specific parameters and in Debug mode' do
+        expect(subject).to receive(:system).with(
+            tool,
+            sln[:file_path],
+            '/nologo',
+            '/t:Build',
+            '/property:Configuration=Debug')
+        subject.compile('Debug') do |conf|
+          conf.no_logo = true
+          conf.targets = %w(Build)
+        end
+      end
+    end
+
+    context 'with block and conflicting Debug mode as a parameter' do
+      it 'builds solution with specific parameters and in Debug mode' do
+        expect(subject).to receive(:system).with(
+            tool,
+            sln[:file_path],
+            '/nologo',
+            '/t:Build',
+            '/property:Configuration=Debug')
+        subject.compile('Debug') do |conf|
+          conf.no_logo = true
+          conf.targets = %w(Build)
+          conf.properties = { 'Configuration' => 'Release' }
+        end
       end
     end
   end
