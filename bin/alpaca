@@ -2,6 +2,7 @@
 require 'gli'
 require 'alpaca'
 require 'alpaca/solution'
+require 'alpaca/nuget'
 require 'yaml'
 
 include GLI::App
@@ -28,29 +29,29 @@ command :init do |c|
 end
 
 desc 'Compile solution'
-arg_name 'Describe arguments to compile here'
+arg_name 'solution_name'
 command :compile do |c|
   c.desc 'Build solution in Debug mode'
   c.switch :d
 
-  c.desc 'Solution file[s]'
-  c.default_value '**/*.sln'
-  c.flag :s, :solution
-
-  c.action do |_global_options, options, _args|
+  c.action do |_, options, args|
     conf = ('Debug' if options[:d]) || 'Release'
-    patern = options[:solution]
-    my_yml = YAML.load(File.open('alpaca.yml'))
-    Dir.glob(patern).each do |f|
-      puts f
-      s = Alpaca::Solution.new(f)
-      s.compile do |c|
-        my_yml.each do |key, value|
-          setter = "#{key}="
-          self.class.send(:attr_accessor, key) unless respond_to?(setter)
-          send setter, value
+    args = ['**/*.sln'] if args == []
+    args.each do |a|
+      Dir.glob(a).each do |f|
+        s = Alpaca::Solution.new(f)
+        puts s.to_s
+        packages_dir = File.join(File.dirname(s.file), '/packages')
+        Alpaca::Nuget.new('d:/Nuget/Nuget.exe').restore s.file do
+          configure(non_interactive: true)
+          configure(config_file: 'd:/Nuget/Nuget.config')
+          configure(verbosity: 'detailed')
+          configure(output_directory: packages_dir)
         end
-        c.properties['Configuration'] = conf
+        s.compile do
+          configure(targets: %w(Clean Rebuild), verbosity: 'minimal')
+          configure(properties: { 'Configuration' => conf })
+        end
       end
     end
   end

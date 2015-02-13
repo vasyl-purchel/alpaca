@@ -23,4 +23,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rubocop')
   s.add_development_dependency('bundler', '~> 1.6')
   s.add_runtime_dependency('gli', '2.12.2')
+  s.add_runtime_dependency('rainbow')
 end

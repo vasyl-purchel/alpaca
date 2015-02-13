@@ -1,8 +1,9 @@
 require 'rbconfig'
 
 module Alpaca
-  # Detect OS
+  # The *Os* module provides methods to define host os
   module Os
+    # Returns host os as :windows, :macosx, :linux or :unix
     def self.os
       @os ||= (
         host_os = RbConfig::CONFIG['host_os']

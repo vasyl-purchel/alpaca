@@ -1,10 +1,16 @@
 require 'rbconfig'
 
 module Alpaca
-  # MSBuild can be used to build Visual Studio solutions
+  # The *MSBuild* module provides method to:
+  # - get MSBuild.exe path
   module MSBuild
     EXE = 'MSBuild.exe'
 
+    # Returns MSBuild.exe location for specific .Net Framework version
+    #
+    # +net_version+:: .Net Framework version (net451 by default)
+    # - works with :net4, :net40, :net45, :net451
+    # - fail for :net2, :net20, :net30, :net35
     def self.executable(net_version = :net451)
       case net_version
       when :net2, :net20, :net30, :net35
@@ -13,10 +19,6 @@ module Alpaca
       when :net45, :net451 then get_from_new_place('12.0')
       else fail "Don't know version #{net_version}"
       end
-    end
-
-    def self.backdoor(&block)
-      instance_eval(&block) if block_given?
     end
 
     def self.get_from_new_place(version_path_part)

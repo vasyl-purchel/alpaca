@@ -1,7 +1,18 @@
 MSBuild:
-  - targets: ["Clean", "Redeploy"]
-    verbosity: "detailed"
-    no_logo: true
-    properties:
-      DebugSymbols: false
-      DebugType: 'None'
+  targets: ["Clean", "Rebuild"]
+  verbosity: "detailed"
+  no_logo: true
+  properties:
+    DebugSymbols: false
+    DebugType: 'None'
+Nuget:
+  exe: 'C:\Nuget\Nuget.exe'
+  alt_exe: 'mono --runtime=v4.0.30319 /usr/lib/nuget/nuget.exe'
+  config: 'C:\Nuget\NuGet.Config'
+  alt_config: '/usr/lib/nuget/nuget.config'
+  non_interactive: true
+Gerrit:
+  host: 'gerrit.wonga.com'
+  port: '29418'
+  key: '$JENKINS_HOME/.ssh/builduser'
+  user: 'builduser'

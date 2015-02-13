@@ -1,6 +1,9 @@
 require_relative '../../lib/alpaca/solution'
 
 describe Alpaca::Solution do
+  before :each do
+    allow(subject).to receive(:puts)
+  end
   let(:sln) do
     {
       file: 'spec/test_data/TestSolution.sln',
@@ -85,10 +88,10 @@ describe Alpaca::Solution do
     end
 
     context 'When solution file does not exists' do
-      subject { Alpaca::Solution.new 'ghost.sln' }
+      subject { Alpaca::Solution }
 
       it 'then fails with RuntimeError' do
-        expect { subject }.to raise_error
+        expect { Alpaca::Solution.new 'ghost.sln' }.to raise_error
       end
     end
   end
@@ -105,59 +108,63 @@ describe Alpaca::Solution do
 
     context 'without any parameters' do
       it 'rebuilds solution with default configuration' do
-        expect(subject).to receive(:system).with(tool, sln[:file_path])
+        result = [tool, sln[:file_path]].join(' ')
+        expect(subject).to receive(:`).with(result)
         subject.compile
       end
     end
 
     context 'with Debug mode as a parameter' do
+      let(:result) do
+        a = [tool, sln[:file_path]]
+        a += %w(/Property:Configuration=Debug)
+        a.join(' ')
+      end
       it 'rebuilds solution in debug mode' do
-        expect(subject).to receive(:system).with(
-          tool,
-          sln[:file_path],
-          '/property:Configuration=Debug')
+        expect(subject).to receive(:`).with(result)
         subject.compile 'Debug'
       end
     end
 
     context 'with block' do
+      let(:result) do
+        a = [tool, sln[:file_path]]
+        a += %w(/NoLogo /Target:Build)
+        a.join(' ')
+      end
       it 'builds solution with specific parameters' do
-        expect(subject).to receive(:system)
-          .with(tool, sln[:file_path], '/nologo', '/t:Build')
-        subject.compile do |conf|
-          conf.no_logo = true
-          conf.targets = %w(Build)
+        expect(subject).to receive(:`).with(result)
+        subject.compile do
+          configure(no_logo: true, target: %w(Build))
         end
       end
     end
 
     context 'with block and Debug mode as a parameter' do
+      let(:result) do
+        a = [tool, sln[:file_path]]
+        a += %w(/NoLogo /Target:Build /Property:Configuration=Debug)
+        a.join(' ')
+      end
       it 'builds solution with specific parameters and in Debug mode' do
-        expect(subject).to receive(:system).with(
-            tool,
-            sln[:file_path],
-            '/nologo',
-            '/t:Build',
-            '/property:Configuration=Debug')
-        subject.compile('Debug') do |conf|
-          conf.no_logo = true
-          conf.targets = %w(Build)
+        expect(subject).to receive(:`).with(result)
+        subject.compile('Debug') do
+          configure(no_logo: true, target: %w(Build))
         end
       end
     end
 
     context 'with block and conflicting Debug mode as a parameter' do
+      let(:result) do
+        a = [tool, sln[:file_path]]
+        a += %w(/NoLogo /Target:Build /Property:Configuration=Debug)
+        a.join(' ')
+      end
       it 'builds solution with specific parameters and in Debug mode' do
-        expect(subject).to receive(:system).with(
-            tool,
-            sln[:file_path],
-            '/nologo',
-            '/t:Build',
-            '/property:Configuration=Debug')
-        subject.compile('Debug') do |conf|
-          conf.no_logo = true
-          conf.targets = %w(Build)
-          conf.properties = { 'Configuration' => 'Release' }
+        expect(subject).to receive(:`).with(result)
+        subject.compile('Debug') do
+          configure(no_logo: true, target: %w(Build))
+          configure(property: { 'Configuration' => 'Release' })
         end
       end
     end

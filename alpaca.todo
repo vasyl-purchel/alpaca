@@ -1,20 +1,20 @@
 tasks:
- ☐ nuget_restore
- ☐ nuget_pack
- ☐ nuget_install
+ ✔ nuget_restore @done (15-02-13 19:27)
+ ✔ nuget_pack @done (15-02-13 19:27)
+ ✔ nuget_install @done (15-02-13 19:27)
  ☐ nuget_promote
 
  ☐ artifactory_get_release_notes_and_version
  ☐ git_find_changes
  ☐ git_discard_changes
 
- ☐ solution_compile
+ ✔ solution_compile @done (15-02-13 19:27)
  ☐ solution_unit_test (+reports)
  ☐ solution_service_test (+reports)
 
  ☐ versioning
 
- ☐ gerrit_review
+ ✔ gerrit_review @done (15-02-13 19:27)
 
  ☐ jenkins_environment
 
