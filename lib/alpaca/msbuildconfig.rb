@@ -1,4 +1,5 @@
 require_relative 'configurable'
+require_relative 'msbuild_attribute_formatter'
 
 module Alpaca
   module MSBuild
@@ -33,22 +34,9 @@ module Alpaca
       # for current configuration
       def args
         args = %W(#{file})
-        args += all_configured_attributes_to_camel_args('/', ':')
+        formatter = MSBuildAttributeFormatter.new
+        args += configured_attributes_as_arguments('/', ':', formatter)
         args
-      end
-
-      # Overrides _get_arg_value_ from Alpaca::Configurable module
-      # to provide formatiing for Array and Hash attributes
-      # (target and property)
-      def get_arg_value(key)
-        val = send key
-        if val.is_a?(Array)
-          val.join(';')
-        elsif val.is_a?(Hash)
-          val.map { |k, v| "#{k}=#{v}" }.join(';')
-        else
-          val.to_s
-        end
       end
 
       # Set property
@@ -61,8 +49,7 @@ module Alpaca
         if @property
           @property[name] = value
         else
-          @property = { name => value }
-          mark_as_configured 'property', @property
+          configure_attribute 'property', name => value
         end
       end
     end

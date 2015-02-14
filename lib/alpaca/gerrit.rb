@@ -18,10 +18,7 @@ module Alpaca
     #
     #   g = Alpaca::Gerrit.new 'gerrit.com', '80', '~/.ssh/id_rsa', 'vasyl'
     def initialize(host, port, key, user)
-      @host = host
-      @port = port
-      @key = key
-      @user = user
+      @host, @port, @key, @user = host, port, key, user
     end
 
     # Update label for gerrit review

@@ -87,6 +87,7 @@ module Alpaca
     # +&block+:: accepts block with configuration
     #
     #   n.promote 'alpaca.0.0.1-alpha005.nupkg'
+    #     # => "alpaca.0.0.1-beta001.nupkg"
     #   n.promote 'alpaca', '0.0.1-beta001'
     def promote(id_or_file, version = nil, &block)
       info("#{id_or_file} with #{version} will be promoted")
@@ -97,7 +98,7 @@ module Alpaca
 
     def common(command, args, &block)
       instance_eval(&block) if block_given?
-      args += all_configured_attributes_to_camel_args('-', ' ')
+      args += configured_attributes_as_arguments('-', ' ')
       if @config && !args.any? { |a| a.start_with?('-ConfigFile') }
         args += ["-ConfigFile #{@config}"]
       end
