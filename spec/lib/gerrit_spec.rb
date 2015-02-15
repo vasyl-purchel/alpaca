@@ -4,7 +4,7 @@ describe Alpaca::Gerrit do
   before :each do
     allow(subject).to receive(:puts)
   end
-  describe '#new' do
+  describe '::new' do
     subject { Alpaca::Gerrit.new 'gerrit.alpaca.com', '80', 'id_rsa', 'vasyl' }
     it 'returns Gerrit object' do
       expect(subject).to be_an_instance_of Alpaca::Gerrit

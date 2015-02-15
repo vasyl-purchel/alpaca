@@ -1,2 +1,2 @@
-require 'alpaca/version.rb'
-require 'alpaca/solution.rb'
+require_relative 'alpaca/versioning'
+require_relative 'alpaca/solution'

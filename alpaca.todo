@@ -16,24 +16,24 @@ tasks:
 
  ✔ gerrit_review @done (15-02-13 19:27)
 
- ☐ jenkins_environment
+ ✘ jenkins_environment??? @cancelled (15-02-15 21:33)
 
 build: 
-  nuget_restore
-  compile
-  unit_test
+  nuget_restore+
+  compile+
+  unit_test-
 build-ST:
-  nuget_restore
-  compile
-  unit_test
-  service_test
+  nuget_restore+
+  compile+
+  unit_test-
+  service_test-
 build-package:
-  update_version
-  compile
-  discard_versioning_git_changes
-  create_nuget_package
-  push_nuget_package
-  create_environment_file
+  update_version-
+  compile+
+  discard_versioning_git_changes-
+  create_nuget_package+
+  push_nuget_package+
+  create_environment_file??
 
 
 RUBYLIB=lib bin/alpaca help

@@ -1,15 +1,10 @@
 require_relative '../../lib/alpaca/nuget'
-require_relative 'spec_helper'
-
-RSpec.configure do |c|
-  c.include Helpers
-end
 
 describe Alpaca::Nuget do
   before :each do
     allow(subject).to receive(:puts)
   end
-  describe '#new' do
+  describe '::new' do
     context 'When only exe path passed as argument' do
       subject { Alpaca::Nuget.new 'path/nuget.exe' }
       it 'returns Nuget object' do

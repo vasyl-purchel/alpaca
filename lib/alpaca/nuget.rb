@@ -1,5 +1,6 @@
 require_relative 'configurable'
 require_relative 'executable'
+require_relative 'versioning'
 
 module Alpaca
   # The *Nuget* class provides methods to work with

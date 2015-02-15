@@ -25,7 +25,7 @@ RSpec.configure do |c|
 end
 
 describe Alpaca::MSBuild do
-  describe '#executable' do
+  describe '::executable' do
     def testcase(key)
       normalize_path(test_cases[key])
     end
@@ -126,7 +126,7 @@ describe Alpaca::MSBuild do
 
   describe Alpaca::MSBuild::Config do
     let(:file) { 'src/TestSolution.sln' }
-    describe '#new' do
+    describe '::new' do
       context 'when only file passed as a parameter' do
         subject { Alpaca::MSBuild::Config.new(file) }
         it 'then creates new MSBuild::Config object' do

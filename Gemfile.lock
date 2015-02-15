@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    alpaca (0.0.1)
+    alpaca (1.0.0)
       gli (= 2.12.2)
       rainbow
 
@@ -25,6 +25,7 @@ GEM
       multi_json (>= 1.7.5, < 2.0)
       multi_test (>= 0.1.1)
     diff-lcs (1.2.5)
+    fakefs (0.6.5)
     ffi (1.9.6-x64-mingw32)
     ffi (1.9.6-x86-mingw32)
     gherkin (2.12.2)
@@ -70,6 +71,7 @@ DEPENDENCIES
   alpaca!
   aruba
   bundler (~> 1.6)
+  fakefs
   rake
   rdoc
   rspec

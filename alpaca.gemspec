@@ -1,7 +1,8 @@
-require File.join([File.dirname(__FILE__), 'lib', 'alpaca', 'version.rb'])
+require_relative 'lib/alpaca/versioning'
+
 Gem::Specification.new do |s|
   s.name = 'alpaca'
-  s.version = Alpaca::VERSION
+  s.version = '1.0.0' # Alpaca::Versioning.find.format '%M.%m.%p'
   s.author = 'Vasyl Purchel'
   s.email = 'vasyl.purchel@gmail.com'
   s.homepage = 'https://github.com/vasyl-purchel/alpaca'
@@ -20,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rdoc')
   s.add_development_dependency('aruba')
   s.add_development_dependency('rspec')
+  s.add_development_dependency('fakefs')
   s.add_development_dependency('rubocop')
   s.add_development_dependency('bundler', '~> 1.6')
   s.add_runtime_dependency('gli', '2.12.2')

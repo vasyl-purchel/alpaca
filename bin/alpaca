@@ -9,7 +9,7 @@ include GLI::App
 
 program_desc 'Custom build tool'
 
-version Alpaca::VERSION
+version Alpaca::Versioning.find.format '%M.%m.%p'
 
 subcommand_option_handling :normal
 arguments :strict

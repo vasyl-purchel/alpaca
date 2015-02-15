@@ -19,7 +19,7 @@ describe Alpaca::Solution do
     }
   end
 
-  describe '#new' do
+  describe '::new' do
     context 'When only solution file passed as argument' do
       subject { Alpaca::Solution.new sln[:file] }
 

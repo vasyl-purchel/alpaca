@@ -1,7 +1,7 @@
 require 'yaml'
-require 'pathname'
 require_relative 'errors'
 require_relative 'attribute'
+require_relative 'file_system'
 
 module Alpaca
   # The *Configurable* module provides methods to:
@@ -14,16 +14,15 @@ module Alpaca
     #       # => "#<A:0x000000036a6fc8 @hello=\"world\" ..."
     #   b.configure('hello_world.yml')
     #       # => "#<B:0x00000003987ee0 @hello=\"world\" ..."
-    def configure(file_or_config, config_dir_name = '')
+    def configure(file_or_config)
       unless file_or_config.is_a?(Hash) || file_or_config.is_a?(String)
         fail Errors::ConfigurationIsNeitherFileNorHash
       end
-      if file_or_config.is_a?(Hash) then config = file_or_config
-      elsif file_or_config.is_a?(String)
-        file = find_config(file_or_config, config_dir_name)
-        fail Errors::ConfigNotFound if file.nil?
-        config = YAML.load(File.open(file))
+      if file_or_config.is_a?(Hash)
+        return file_or_config.each { |k, v| configure_attribute(k, v) }
       end
+      fail Errors::ConfigNotFound unless File.exist?(file_or_config)
+      config = YAML.load(File.open(file_or_config)) || {}
       config.each { |k, v| configure_attribute(k, v) }
     end
 
@@ -57,20 +56,6 @@ module Alpaca
     def configured_attributes_as_arguments(prefix, separator, formatter = nil)
       return [] unless @attributes
       @attributes.map { |a| a.to_arg(prefix, separator, formatter) }
-    end
-
-    # Returns path to configuration directory by a reverse searching from
-    # the base directory back to the filesystem's root directory
-    #
-    # +name+:: name of config directory
-    # +[config_dir]+:: base config directory ('' by default)
-    # +[dir]+:: base directory to start search from(current working
-    # directory by default)
-    def find_config(name, config_dir = '', cur = Pathname.new('.'))
-      file = File.join(cur.expand_path, config_dir, name)
-      return file if File.exist?(file)
-      return nil if cur.expand_path.root?
-      find_config(name, config_dir, cur.parent)
     end
   end
 end
