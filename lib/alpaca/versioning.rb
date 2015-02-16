@@ -1,6 +1,8 @@
-require_relative 'errors'
-require_relative 'version'
 require 'fileutils'
+require 'yaml'
+require 'alpaca/errors'
+require 'alpaca/entity/version'
+require 'alpaca/ext/file' unless File.respond_to?(:find)
 
 module Alpaca
   # The *Versioning* provides methods to load and save version
@@ -28,7 +30,7 @@ module Alpaca
     # +[dir]+:: base directory for .semver file(current working
     # directory by default)
     def self.find(dir = '')
-      semver = FileSystem.find FILE_NAME, dir
+      semver = File.find FILE_NAME, dir
       fail Errors::SemVerFileNotFound if semver.nil?
       hash = YAML.load_file(semver) || {}
       hash[:file] = semver

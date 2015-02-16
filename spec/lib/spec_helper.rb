@@ -21,29 +21,6 @@ module Helpers
       .and_return(value)
   end
 
-  def make_any_file_exists
-    allow(File).to receive(:exist?)
-      .and_return(true)
-  end
-
-  def mock_file(path)
-    allow(File).to receive(:exist?)
-      .with(path)
-      .and_return(true)
-    allow(File).to receive(:directory?)
-      .with(path)
-      .and_return(false)
-  end
-
-  def mock_directory(path)
-    allow(File).to receive(:exist?)
-      .with(path)
-      .and_return(true)
-    allow(File).to receive(:directory?)
-      .with(path)
-      .and_return(true)
-  end
-
   def get_host_os(os)
     case os
     when :windows then 'mingw32'

@@ -1,15 +1,9 @@
-require_relative 'configurable'
-require_relative 'executable'
-require_relative 'msbuild'
-require_relative 'msbuildconfig'
-
+require 'alpaca/base/logger'
 module Alpaca
   # The *Solution* class provides method to:
   # - compile solution
   class Solution
-    include Configurable
-    include Executable
-
+    include Logger
     attr_accessor :file, :net_version
     attr_accessor :format_version
     attr_accessor :visual_studio_version, :minimum_visual_studio_version
@@ -18,14 +12,12 @@ module Alpaca
     # Creates instance of class
     #
     # +file+:: solution file
-    # +[net_version]+:: .Net framework version(:net451 by default)
     #
     #   s = Alpaca::Solution.new 'some.sln'
-    #     # => #<**:Solution:** @file="d:/some.sln", @net_version=:net451 **>
-    def initialize(file, net_version = :net451)
+    #     # => #<**:Solution:** @file="d:/some.sln" **>
+    def initialize(file)
       @file = File.expand_path(file)
       fail "Can't find file #{@file}" unless File.exist?(@file)
-      @net_version = net_version
       initialize_data
     end
 
@@ -40,19 +32,6 @@ module Alpaca
       @projects.each { |p| s += "\n\t{#{p[:name]};#{p[:file]}}" }
       s += "\n------------"
       s
-    end
-
-    # Compiles solution with MSBuild.exe
-    #
-    # +[configuration]+:: Release or Debug configuration
-    # +&block+:: accepts blocks that will be passed to MSBuild::Config
-    def compile(configuration = nil, &block)
-      build_tool = MSBuild.executable @net_version
-      config = MSBuild::Config.new(@file) do
-        instance_eval(&block) if block_given?
-        set_property('Configuration', configuration) unless configuration.nil?
-      end
-      execute build_tool, config.args
     end
 
     private

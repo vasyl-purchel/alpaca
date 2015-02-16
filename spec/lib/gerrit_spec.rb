@@ -1,4 +1,4 @@
-require_relative '../../lib/alpaca/gerrit'
+require 'alpaca/tools/gerrit'
 
 describe Alpaca::Gerrit do
   before :each do
@@ -45,13 +45,13 @@ describe Alpaca::Gerrit do
     subject { Alpaca::Gerrit.new 'gerrit.alpaca.com', '80', 'id_rsa', 'vasyl' }
     let(:param) do
       result = %w(ssh -i id_rsa vasyl@gerrit.alpaca.com -p 80 gerrit)
-      result += %w(create-project --name alpaca --parent alpaca_acls)
+      result += %w(create-project --parent alpaca_acls)
       result.join(' ')
     end
 
     context 'When description is not passed' do
       it 'execute ssh command to update label in review' do
-        expect(subject).to receive(:`).with(param)
+        expect(subject).to receive(:`).with(param + ' alpaca')
         subject.create_project 'alpaca', 'alpaca_acls'
       end
     end
@@ -59,7 +59,7 @@ describe Alpaca::Gerrit do
     context 'When description is passed' do
       it 'execute ssh command to update label in review' do
         descr = ' --description "cool tool"'
-        expect(subject).to receive(:`).with(param + descr)
+        expect(subject).to receive(:`).with(param + descr + ' alpaca')
         subject.create_project 'alpaca', 'alpaca_acls', 'cool tool'
       end
     end

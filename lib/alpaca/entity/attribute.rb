@@ -1,4 +1,4 @@
-require_relative 'camelize_name_formatter'
+require 'alpaca/base/base_formatter'
 
 module Alpaca
   # The *Attribute* class provides methods around attributes
@@ -20,7 +20,7 @@ module Alpaca
     # +[formatter]+:: class that implements format(name, value)
     # (CamelizeNameFormatter by default)
     def to_arg(prefix, separator, formatter = nil)
-      formatter ||= CamelizeNameFormatter.new
+      formatter ||= BaseFormatter.new
       n, v = formatter.format(@name, @value)
       arg = %W(#{prefix} #{n})
       arg += %W(#{separator} #{v}) unless switch?

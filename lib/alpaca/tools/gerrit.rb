@@ -1,13 +1,11 @@
-require_relative 'configurable'
-require_relative 'executable'
+require 'alpaca/base/command_line_tool'
 
 module Alpaca
   # The *Gerrit* class provides methods to:
   # - update gerrit review labels
   # - create new project in gerrit(new repository)
   class Gerrit
-    include Configurable
-    include Executable
+    include CommandLineTool
 
     # Creates instance of class
     #
@@ -19,6 +17,8 @@ module Alpaca
     #   g = Alpaca::Gerrit.new 'gerrit.com', '80', '~/.ssh/id_rsa', 'vasyl'
     def initialize(host, port, key, user)
       @host, @port, @key, @user = host, port, key, user
+      base = %W(ssh -i #{@key} #{@user}@#{@host} -p #{@port} gerrit)
+      super(base.join(' '), '--', ' ', false)
     end
 
     # Update label for gerrit review
@@ -27,9 +27,9 @@ module Alpaca
     # +value+:: value for the label (-2, -1, 0, 1, 2)
     # +revision+:: review identifier for label to be updated on
     def review(label, value, revision)
-      command = 'review'
-      args = %W(--label #{label}=#{value} #{revision})
-      exec command, args
+      run 'review', revision do
+        configure(label: "#{label}=#{value}")
+      end
     end
 
     # Create new gerrit project/repository
@@ -40,17 +40,10 @@ module Alpaca
     #
     #   g.create_project 'rubytools\alpaca', 'rubytools\acls'
     def create_project(name, parent, description = nil)
-      command = 'create-project'
-      args = %W(--name #{name} --parent #{parent})
-      args += %W(--description "#{description}") if description
-      exec command, args
-    end
-
-    private
-
-    def exec(command, args)
-      base = %W(-i #{@key} #{@user}@#{@host} -p #{@port} gerrit)
-      execute 'ssh', base + %W(#{command}) + args
+      run 'create-project', name do
+        configure(parent: parent)
+        configure(description: description) if description
+      end
     end
   end
 end

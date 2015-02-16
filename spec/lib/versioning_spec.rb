@@ -1,10 +1,17 @@
-require_relative '../../lib/alpaca/errors'
-require_relative '../../lib/alpaca/versioning'
 require 'fakefs/spec_helpers'
+require 'alpaca/errors'
+require 'alpaca/versioning'
 
 describe Alpaca::Versioning do
   include FakeFS::SpecHelpers
-
+  module FakeFS
+    # Extending FakeFS to File.find method
+    class File
+      def self.find(name, dir = '', cur = Pathname.new('.'))
+        Alpaca.find_file(name, dir, cur)
+      end
+    end
+  end
   describe '::init' do
     let(:content) do
       "---\n:major: 0\n:minor: 0\n:patch: 0\n:special: ''\n:metadata: ''\n"
@@ -178,6 +185,7 @@ describe Alpaca::Versioning do
 end
 
 describe Alpaca::Version do
+  include FakeFS::SpecHelpers
   def set_version(a, b, c, d, e)
     open('.semver', 'w') { |io| io.write 'mock file presense' }
     { file: '.semver', major: a, minor: b, patch: c, special: d, metadata: e }
@@ -191,26 +199,70 @@ describe Alpaca::Version do
     end
   end
   describe '#increase :minor' do
-    it 'v1.2.3-rc+03fb4 -> v1.3.0-rc+03fb4'
+    it 'v1.2.3-rc+03fb4 -> v1.3.0-rc+03fb4' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, 'rc', '03fb4')
+      v.increase :minor
+      expect(v.to_s).to eq 'v1.3.0-rc+03fb4'
+    end
   end
   describe '#increase :patch' do
-    it 'v1.2.3-rc+03fb4 -> v1.2.4-rc+03fb4'
+    it 'v1.2.3-rc+03fb4 -> v1.2.4-rc+03fb4' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, 'rc', '03fb4')
+      v.increase :patch
+      expect(v.to_s).to eq 'v1.2.4-rc+03fb4'
+    end
   end
   describe '#increase :prerelease' do
-    it 'v1.2.3-alpha+03fb4 -> v1.2.3-beta+03fb4'
-    it 'v1.2.3-beta+03fb4 -> v1.2.3-rc+03fb4'
-    it 'v1.2.3-rc+03fb4 -> fail PreReleaseTagNotFound'
-    it 'v1.2.3 -> fail NotPreRelease'
+    it 'v1.2.3-alpha+03fb4 -> v1.2.3-beta+03fb4' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, 'alpha', '03fb4')
+      v.increase :prerelease
+      expect(v.to_s).to eq 'v1.2.3-beta+03fb4'
+    end
+    it 'v1.2.3-beta+03fb4 -> v1.2.3-rc+03fb4' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, 'beta', '03fb4')
+      v.increase :prerelease
+      expect(v.to_s).to eq 'v1.2.3-rc+03fb4'
+    end
+    it 'v1.2.3-rc+03fb4 -> fail PreReleaseTagReachedFinalVersion' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, 'rc', '03fb4')
+      expect { v.increase :prerelease }
+        .to raise_error(Alpaca::Errors::PreReleaseTagReachedFinalVersion)
+    end
+    it 'v1.2.3 -> fail NotPreRelease' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, '', '')
+      expect { v.increase :prerelease }
+        .to raise_error(Alpaca::Errors::NotPreRelease)
+    end
   end
   describe '#metadata 334f666' do
-    it 'v1.2.3-rc+03fb4 -> v1.2.3-rc+334f666'
+    it 'v1.2.3-rc+03fb4 -> v1.2.3-rc+334f666' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, 'rc', '03fb4')
+      v.metadata = '334f666'
+      expect(v.to_s).to eq 'v1.2.3-rc+334f666'
+    end
   end
   describe '#release' do
-    it 'v1.2.3-rc+03fb4 -> v1.2.3'
-    it 'v1.2.3 -> fail AlreadyReleaseVersion'
+    it 'v1.2.3-rc+03fb4 -> v1.2.3' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, 'rc', '03fb4')
+      v.release
+      expect(v.to_s).to eq 'v1.2.3'
+    end
+    it 'v1.2.3 -> fail AlreadyReleaseVersion' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, '', '')
+      expect { v.release }
+        .to raise_error(Alpaca::Errors::AlreadyReleaseVersion)
+    end
   end
   describe '#make_prerelease' do
-    it 'v1.2.3-rc+03fb4 -> fail AlreadyPreReleaseVersion'
-    it 'v1.2.3 -> v1.2.3-alpha'
+    it 'v1.2.3-rc+03fb4 -> fail AlreadyPreReleaseVersion' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, 'rc', '03fb4')
+      v.increase :major
+      expect(v.to_s).to eq 'v2.0.0-rc+03fb4'
+    end
+    it 'v1.2.3 -> v1.2.3-alpha' do
+      v = Alpaca::Version.new(set_version 1, 2, 3, 'rc', '03fb4')
+      v.increase :major
+      expect(v.to_s).to eq 'v2.0.0-rc+03fb4'
+    end
   end
 end

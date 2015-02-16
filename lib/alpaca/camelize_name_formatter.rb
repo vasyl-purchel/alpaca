@@ -1,10 +1,12 @@
+require 'alpaca/base/base_formatter'
+
 module Alpaca
   # The *CamelizeNameFormatter* class provides format for name value pairs
   # by camelizing(hello_world -> HelloWorld) name
-  class CamelizeNameFormatter
+  class CamelizeNameFormatter < BaseFormatter
     # Returns [name, value] with camelized name and value.to_s
     def format(name, value)
-      [camelize(name.to_s), value.to_s]
+      super(camelize(name.to_s), value)
     end
 
     private

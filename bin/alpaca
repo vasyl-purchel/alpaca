@@ -1,15 +1,14 @@
 #!/usr/bin/env ruby
 require 'gli'
 require 'alpaca'
-require 'alpaca/solution'
-require 'alpaca/nuget'
+require 'alpaca/entity/solution'
 require 'yaml'
 
 include GLI::App
 
 program_desc 'Custom build tool'
 
-version Alpaca::Versioning.find.format '%M.%m.%p'
+version Alpaca::Versioning.find.to_s '%M.%m.%p'
 
 subcommand_option_handling :normal
 arguments :strict
@@ -40,6 +39,7 @@ command :compile do |c|
     args.each do |a|
       Dir.glob(a).each do |f|
         s = Alpaca::Solution.new(f)
+        s.header("\x00cool!")
         puts s.to_s
         packages_dir = File.join(File.dirname(s.file), '/packages')
         Alpaca::Nuget.new('d:/Nuget/Nuget.exe').restore s.file do

@@ -1,13 +1,15 @@
 PATH
   remote: .
   specs:
-    alpaca (1.0.0)
+    alpaca (0.0.0)
+      artii
       gli (= 2.12.2)
       rainbow
 
 GEM
   remote: https://rubygems.org/
   specs:
+    artii (2.1.1)
     aruba (0.6.2)
       childprocess (>= 0.3.6)
       cucumber (>= 1.1.1)

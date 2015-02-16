@@ -1,7 +1,7 @@
 require 'yaml'
-require_relative 'errors'
-require_relative 'attribute'
-require_relative 'file_system'
+require 'alpaca/errors'
+require 'alpaca/entity/attribute'
+require 'alpaca/ext/file' unless File.method_defined?(:find)
 
 module Alpaca
   # The *Configurable* module provides methods to:
@@ -42,7 +42,7 @@ module Alpaca
     def clear_configuration
       return nil unless @attributes
       @attributes.each do |a|
-        remove_instance_variable('@' + a.name.to_s).to_sym
+        remove_instance_variable(('@' + a.name.to_s).to_sym)
       end
       @attributes = nil
     end

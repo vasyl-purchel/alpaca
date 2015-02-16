@@ -1,8 +1,10 @@
-require_relative 'lib/alpaca/versioning'
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'alpaca/versioning'
 
 Gem::Specification.new do |s|
   s.name = 'alpaca'
-  s.version = '1.0.0' # Alpaca::Versioning.find.format '%M.%m.%p'
+  s.version = (Alpaca::Versioning.find).to_s '%M.%m.%p'
   s.author = 'Vasyl Purchel'
   s.email = 'vasyl.purchel@gmail.com'
   s.homepage = 'https://github.com/vasyl-purchel/alpaca'
@@ -26,4 +28,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency('bundler', '~> 1.6')
   s.add_runtime_dependency('gli', '2.12.2')
   s.add_runtime_dependency('rainbow')
+  s.add_runtime_dependency('artii')
 end

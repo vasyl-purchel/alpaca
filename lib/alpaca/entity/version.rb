@@ -1,10 +1,11 @@
-require_relative 'errors'
+require 'alpaca/errors'
 
 module Alpaca
   # The *Version* class contains semantic version and methods
   # for updating it
   class Version
     attr_reader :major, :minor, :patch, :special, :metadata, :file
+    attr_writer :metadata
     PRE_RELEASE = %w(alpha beta rc)
 
     # Creates new instance
@@ -139,7 +140,7 @@ module Alpaca
         end
         tmp = v
       end
-      fail Errors::PreReleaseTagNotFound
+      fail Errors::PreReleaseTagReachedFinalVersion
     end
   end
 end

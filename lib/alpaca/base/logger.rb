@@ -1,6 +1,7 @@
 require 'date'
 require 'rainbow'
 require 'rainbow/ext/string' unless String.method_defined?(:color)
+require 'alpaca/ext/string' unless String.method_defined?(:artify)
 
 module Alpaca
   # The *Logger* module provides methods to:
@@ -30,6 +31,13 @@ module Alpaca
     def error(msg)
       dt = DateTime.now.strftime(DATETIME_LOG)
       puts "[#{dt}] ERROR: #{msg}".color(:black).background(:red)
+    end
+
+    # Logs nice green header
+    #
+    # +msg+:: header to log(use short headers so they fit screen good)
+    def header(msg)
+      puts msg.to_s.artify('doom').color(:green).bright
     end
   end
 end
