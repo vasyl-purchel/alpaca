@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectName", "ProjectName\ProjectName.csproj", "{8C47099D-7BD7-4918-8831-6CF81B293148}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectName2", "ProjectName2\ProjectName2.csproj", "{FAFD92CC-C77A-41DE-AA8F-1E3043AA8310}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0F53CC89-45D3-4272-BA0E-257F94833E69}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C47099D-7BD7-4918-8831-6CF81B293148}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C47099D-7BD7-4918-8831-6CF81B293148}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C47099D-7BD7-4918-8831-6CF81B293148}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C47099D-7BD7-4918-8831-6CF81B293148}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAFD92CC-C77A-41DE-AA8F-1E3043AA8310}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAFD92CC-C77A-41DE-AA8F-1E3043AA8310}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAFD92CC-C77A-41DE-AA8F-1E3043AA8310}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAFD92CC-C77A-41DE-AA8F-1E3043AA8310}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

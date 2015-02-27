@@ -44,7 +44,7 @@ describe Alpaca::Nuget do
         'n.exe install packageId -ConfigFile init.config'
       end
       it 'execute `nuget install` with with -ConfigFile from initialization' do
-        expect(subject).to receive(:`).with(result)
+        expect(subject).to receive(:system).with(result)
         subject.run 'install', 'packageId'
       end
     end
@@ -53,10 +53,8 @@ describe Alpaca::Nuget do
       subject { Alpaca::Nuget.new 'n.exe', 'init.config' }
       let(:result) { 'n.exe install packageId -ConfigFile block.config' }
       it 'execute `nuget install` with -ConfigFile from block' do
-        expect(subject).to receive(:`).with(result)
-        subject.run 'install', 'packageId' do
-          configure(config_file: 'block.config')
-        end
+        expect(subject).to receive(:system).with(result)
+        subject.run 'install', 'packageId', config_file: 'block.config'
       end
     end
   end

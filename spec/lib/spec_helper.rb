@@ -9,7 +9,7 @@ module Helpers
   end
 
   def normalize_path(path)
-    File.expand_path(path).downcase
+    "\"#{File.expand_path(path).downcase}\""
   end
 
   def mock_env(key, value)

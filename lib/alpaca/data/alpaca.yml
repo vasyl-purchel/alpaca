@@ -1,3 +1,6 @@
+#local_config: alpaca_local.yml
+#local_config: ['alpaca_local.yml', 'nuget.yml']
+local_config: '#{sln}/config.yml'
 MSBuild:
   targets: ["Clean", "Rebuild"]
   verbosity: "detailed"
@@ -12,7 +15,7 @@ Nuget:
   alt_config: '/usr/lib/nuget/nuget.config'
   non_interactive: true
 Gerrit:
-  host: 'gerrit.wonga.com'
-  port: '29418'
-  key: '$JENKINS_HOME/.ssh/builduser'
-  user: 'builduser'
+  host: 'gerrit.com'
+  port: '80'
+  key: '~/.ssh/id_rsa'
+  user: 'vasyl.purcel'

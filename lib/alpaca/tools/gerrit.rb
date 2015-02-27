@@ -27,9 +27,7 @@ module Alpaca
     # +value+:: value for the label (-2, -1, 0, 1, 2)
     # +revision+:: review identifier for label to be updated on
     def review(label, value, revision)
-      run 'review', revision do
-        configure(label: "#{label}=#{value}")
-      end
+      run 'review', revision, label: "#{label}=#{value}"
     end
 
     # Create new gerrit project/repository
@@ -40,10 +38,9 @@ module Alpaca
     #
     #   g.create_project 'rubytools\alpaca', 'rubytools\acls'
     def create_project(name, parent, description = nil)
-      run 'create-project', name do
-        configure(parent: parent)
-        configure(description: description) if description
-      end
+      config = { parent: parent }
+      config[:description] = description if description
+      run 'create-project', name, config
     end
   end
 end

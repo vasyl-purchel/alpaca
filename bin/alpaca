@@ -2,6 +2,10 @@
 require 'gli'
 require 'alpaca'
 require 'alpaca/entity/solution'
+require 'alpaca/tools/nuget'
+require 'alpaca/tools/msbuild'
+require 'alpaca/base/logger'
+require 'alpaca/factories/configuration_factory'
 require 'yaml'
 
 include GLI::App
@@ -24,6 +28,12 @@ command :init do |c|
   c.flag :f
   c.action do |global_options, options, args|
     puts "init command ran with #{global_options}, #{options}, #{args}"
+    conf = Alpaca::ConfigurationFactory['Gerrit']
+    g = Alpaca::Gerrit.new(conf.fetch(host),
+                           conf.fetch(port),
+                           conf.fetch(key),
+                           conf.fetch(user))
+    g.create_project(args[0], args[1])
   end
 end
 
@@ -41,17 +51,7 @@ command :compile do |c|
         s = Alpaca::Solution.new(f)
         s.header("\x00cool!")
         puts s.to_s
-        packages_dir = File.join(File.dirname(s.file), '/packages')
-        Alpaca::Nuget.new('d:/Nuget/Nuget.exe').restore s.file do
-          configure(non_interactive: true)
-          configure(config_file: 'd:/Nuget/Nuget.config')
-          configure(verbosity: 'detailed')
-          configure(output_directory: packages_dir)
-        end
-        s.compile do
-          configure(targets: %w(Clean Rebuild), verbosity: 'minimal')
-          configure(properties: { 'Configuration' => conf })
-        end
+        puts Alpaca::ConfigurationFactory.configuration('MSBuild',s.file)
       end
     end
   end

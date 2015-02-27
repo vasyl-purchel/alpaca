@@ -44,13 +44,12 @@ module Alpaca
     #     configure(no_cache: true)
     #   end
     #     # => nuget.exe install alpaca -NoCache
-    def run(command, argument, &block)
-      super command, argument do
-        instance_eval(&block) if block_given?
-        if @config && !(@config_file || @ConfigFile)
-          configure(config_file: @config)
-        end
+    def run(command, argument, config = nil)
+      config ||= { config_file: @config } if @config
+      if @config && !(config[:config_file] || config[:ConfigFile])
+        config[:config_file] = @config
       end
+      super command, argument, config
     end
   end
 end

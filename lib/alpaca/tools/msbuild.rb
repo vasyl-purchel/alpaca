@@ -15,7 +15,7 @@ module Alpaca
     # - fail for :net2, :net20, :net30, :net35
     def initialize(net_version = :net451)
       @executable ||= get_executable(net_version)
-      super @executable, '/', ':', true, MSBuildAttributeFormatter.new
+      super "\"#{@executable}\"", '/', ':', true, MSBuildAttributeFormatter.new
     end
 
     # Set property
@@ -36,8 +36,8 @@ module Alpaca
     #
     # +solution+:: solution file
     # +&block+:: accepts block with configurations
-    def run(solution, &block)
-      super '', solution, &block
+    def run(solution, config = nil)
+      super '', solution, config
     end
 
     private

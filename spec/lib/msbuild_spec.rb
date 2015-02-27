@@ -142,7 +142,7 @@ describe Alpaca::MSBuild do
     context 'when file passed with a block as a parameter' do
       subject { Alpaca::MSBuild.new }
       let(:result) do
-        r = 'C:/Program Files/MSBuild/12.0/Bin/MSBuild.exe '
+        r = '"C:/Program Files/MSBuild/12.0/Bin/MSBuild.exe" '
         r += ' src/TestSolution.sln /Verbosity:minimal '
         r += '/Property:Configuration=Debug'
         r += ' /Target:Clean;Rebuild'
@@ -150,23 +150,19 @@ describe Alpaca::MSBuild do
       end
 
       it 'executes msbuild.exe against file with configuration from block' do
-        expect(subject).to receive(:`).with(result)
+        expect(subject).to receive(:system).with(result)
         allow(subject).to receive(:puts)
-        subject.run(file) do
-          configure(verbosity: 'minimal',
-                    property: { Configuration: 'Debug' },
-                    target: %w(Clean Rebuild))
-        end
+        subject.run(file, verbosity: 'minimal',
+                          property: { Configuration: 'Debug' },
+                          target: %w(Clean Rebuild))
       end
 
       it 'and do same if use set_property for /Property' do
-        expect(subject).to receive(:`).with(result)
+        expect(subject).to receive(:system).with(result)
         allow(subject).to receive(:puts)
-        subject.run(file) do
-          configure(verbosity: 'minimal')
-          set_property('Configuration', 'Debug')
-          configure(target: %w(Clean Rebuild))
-        end
+        subject.run(file, verbosity: 'minimal',
+                          property: { 'Configuration' => 'Debug' },
+                          target: %w(Clean Rebuild))
       end
     end
   end

@@ -36,7 +36,7 @@ describe Alpaca::Gerrit do
     end
 
     it 'execute ssh command to update label in review' do
-      expect(subject).to receive(:`).with(param)
+      expect(subject).to receive(:system).with(param)
       subject.review 'tests', '-1', '10325'
     end
   end
@@ -51,7 +51,7 @@ describe Alpaca::Gerrit do
 
     context 'When description is not passed' do
       it 'execute ssh command to update label in review' do
-        expect(subject).to receive(:`).with(param + ' alpaca')
+        expect(subject).to receive(:system).with(param + ' alpaca')
         subject.create_project 'alpaca', 'alpaca_acls'
       end
     end
@@ -59,7 +59,7 @@ describe Alpaca::Gerrit do
     context 'When description is passed' do
       it 'execute ssh command to update label in review' do
         descr = ' --description "cool tool"'
-        expect(subject).to receive(:`).with(param + descr + ' alpaca')
+        expect(subject).to receive(:system).with(param + descr + ' alpaca')
         subject.create_project 'alpaca', 'alpaca_acls', 'cool tool'
       end
     end
