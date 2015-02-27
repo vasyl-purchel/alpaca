@@ -40,4 +40,26 @@ module Alpaca
       puts msg.to_s.artify('doom').color(:green).bright
     end
   end
+
+  # The *Log* class provides log methods outside of
+  # classes scope
+  class Log
+    include Logger
+
+    def self.info(msg)
+      (@instance ||= Log.new).info(msg)
+    end
+
+    def self.warn(msg)
+      (@instance ||= Log.new).warn(msg)
+    end
+
+    def self.error(msg)
+      (@instance ||= Log.new).error(msg)
+    end
+
+    def self.header(msg)
+      (@instance ||= Log.new).header(msg)
+    end
+  end
 end

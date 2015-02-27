@@ -14,9 +14,15 @@ module Alpaca
     # +key+:: private ssh key for the user
     # +user+:: user name
     #
-    #   g = Alpaca::Gerrit.new 'gerrit.com', '80', '~/.ssh/id_rsa', 'vasyl'
-    def initialize(host, port, key, user)
-      @host, @port, @key, @user = host, port, key, user
+    #   g = Alpaca::Gerrit.new('host' => 'gerrit.com',
+    #                          'port' => '80',
+    #                          'key' => '~/.ssh/id_rsa',
+    #                          'user' => 'vasyl')
+    def initialize(configuration)
+      @host = configuration.fetch('host')
+      @port = configuration.fetch('port')
+      @key = configuration.fetch('key')
+      @user = configuration.fetch('user')
       base = %W(ssh -i #{@key} #{@user}@#{@host} -p #{@port} gerrit)
       super(base.join(' '), '--', ' ', false)
     end
@@ -40,6 +46,7 @@ module Alpaca
     def create_project(name, parent, description = nil)
       config = { parent: parent }
       config[:description] = description if description
+      config['empty-commit'] = true
       run 'create-project', name, config
     end
   end

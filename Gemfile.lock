@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    alpaca (0.0.0)
+    alpaca (0.0.1)
       gli (= 2.12.2)
       rainbow
 

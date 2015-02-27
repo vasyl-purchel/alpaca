@@ -3,6 +3,7 @@ require 'gli'
 require 'alpaca'
 require 'alpaca/entity/solution'
 require 'alpaca/tools/nuget'
+require 'alpaca/tools/gerrit'
 require 'alpaca/tools/msbuild'
 require 'alpaca/base/logger'
 require 'alpaca/factories/configuration_factory'
@@ -29,10 +30,7 @@ command :init do |c|
   c.action do |global_options, options, args|
     puts "init command ran with #{global_options}, #{options}, #{args}"
     conf = Alpaca::ConfigurationFactory['Gerrit']
-    g = Alpaca::Gerrit.new(conf.fetch(host),
-                           conf.fetch(port),
-                           conf.fetch(key),
-                           conf.fetch(user))
+    g = Alpaca::Gerrit.new conf
     g.create_project(args[0], args[1])
   end
 end
@@ -44,15 +42,16 @@ command :compile do |c|
   c.switch :d
 
   c.action do |_, options, args|
+    Alpaca::Log.header "\x00Compile"
+    Alpaca::Log.info 'info'
+    Alpaca::Log.warn 'warn'
+    Alpaca::Log.error 'error'
     conf = ('Debug' if options[:d]) || 'Release'
     args = ['**/*.sln'] if args == []
-    args.each do |a|
-      Dir.glob(a).each do |f|
-        s = Alpaca::Solution.new(f)
-        s.header("\x00cool!")
-        puts s.to_s
-        puts Alpaca::ConfigurationFactory.configuration('MSBuild',s.file)
-      end
+    Dir.glob(args).each do |file|
+      s = Alpaca::Solution.new file
+      Alpaca::Log.info "\n" + s.to_s
+      puts Alpaca::ConfigurationFactory['MSBuild', s.file]
     end
   end
 end
