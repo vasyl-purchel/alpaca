@@ -1,11 +1,12 @@
-require 'alpaca/entity/solution'
+require 'alpaca/entities/solution'
+require 'alpaca/factories/solution_factory'
 
 describe Alpaca::Solution do
   let(:sln) do
     cur = File.dirname(File.expand_path(__FILE__))
     {
-      file: File.join(cur, '../test_data', 'TestSolution.sln'),
-      file_path: File.expand_path('spec/test_data/TestSolution.sln'),
+      file: File.join(cur, '../test_data/sln1', 'TestSolution.sln'),
+      file_path: File.expand_path('spec/test_data/sln1/TestSolution.sln'),
       format_version: '12.00',
       vs_version: '12.0.30723.0',
       min_vs_version: '10.0.40219.1',
@@ -50,6 +51,33 @@ describe Alpaca::Solution do
 
       it 'then fails with RuntimeError' do
         expect { Alpaca::Solution.new 'ghost.sln' }.to raise_error
+      end
+    end
+  end
+end
+
+describe Alpaca::SolutionFactory do
+  describe '::new' do
+    context 'when no exclude parameter passed' do
+      it 'returns 3 solutions' do
+        solutions = 0
+        Alpaca::SolutionFactory.find 'spec/test_data/**/*.sln' do |s|
+          expect(s).to be_an_instance_of Alpaca::Solution
+          solutions += 1
+        end
+        expect(solutions).to eq 3
+      end
+    end
+
+    context 'when exclude parameter passed' do
+      it 'returns 2 solutions' do
+        solutions = 0
+        allow(Alpaca::Log).to receive(:warn)
+        Alpaca::SolutionFactory.find 'spec/test_data/**/*.sln', 'nobuild' do |s|
+          expect(s).to be_an_instance_of Alpaca::Solution
+          solutions += 1
+        end
+        expect(solutions).to eq 2
       end
     end
   end

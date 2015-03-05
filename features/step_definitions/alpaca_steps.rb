@@ -1,6 +1,16 @@
-When /^I get help for "([^"]*)"$/ do |app_name|
-  @app_name = app_name
-  step %(I run `bundle exec ruby ../../bin/#{app_name} help`)
+require 'rbconfig'
+case RbConfig::CONFIG['host_os']
+when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+  @prefix = 'bundle exec ruby '
+else
+  @prefix = ''
 end
 
-# Add more step definitions here
+When(/I get help for "(.*)"/) do |app_name|
+  @app_name = app_name
+  `#{app_name} help`
+end
+
+Then(/the exit status should be (.*)/) do |status|
+  expect($CHILD_STATUS.to_i).to eq status.to_i
+end

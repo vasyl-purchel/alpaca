@@ -1,53 +1,14 @@
-require 'alpaca/base/command_line_tool'
+require 'alpaca/tools/console_command_suit'
+require 'alpaca/tools/unix_formatter'
 
 module Alpaca
-  # The *Gerrit* class provides methods to:
-  # - update gerrit review labels
-  # - create new project in gerrit(new repository)
+  # The *Gerrit* class provides access to gerrit command line
   class Gerrit
-    include CommandLineTool
+    include ConsoleCommandSuit
+    include UnixFormatter
 
-    # Creates instance of class
-    #
-    # +host+:: gerrit host
-    # +port+:: port open for connections
-    # +key+:: private ssh key for the user
-    # +user+:: user name
-    #
-    #   g = Alpaca::Gerrit.new('host' => 'gerrit.com',
-    #                          'port' => '80',
-    #                          'key' => '~/.ssh/id_rsa',
-    #                          'user' => 'vasyl')
-    def initialize(configuration)
-      @host = configuration.fetch('host')
-      @port = configuration.fetch('port')
-      @key = configuration.fetch('key')
-      @user = configuration.fetch('user')
-      base = %W(ssh -i #{@key} #{@user}@#{@host} -p #{@port} gerrit)
-      super(base.join(' '), '--', ' ', false)
-    end
-
-    # Update label for gerrit review
-    #
-    # +label+:: label that need to be updated
-    # +value+:: value for the label (-2, -1, 0, 1, 2)
-    # +revision+:: review identifier for label to be updated on
-    def review(label, value, revision)
-      run 'review', revision, label: "#{label}=#{value}"
-    end
-
-    # Create new gerrit project/repository
-    #
-    # +name+:: name of the project
-    # +parent+:: parent project to inherit access rights from
-    # +[description]+:: description of the project
-    #
-    #   g.create_project 'rubytools\alpaca', 'rubytools\acls'
-    def create_project(name, parent, description = nil)
-      config = { parent: parent }
-      config[:description] = description if description
-      config['empty-commit'] = true
-      run 'create-project', name, config
+    def initialize
+      super('gerrit')
     end
   end
 end

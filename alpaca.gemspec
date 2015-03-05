@@ -4,7 +4,7 @@ require 'alpaca/versioning'
 
 Gem::Specification.new do |s|
   s.name = 'alpaca'
-  s.version = (Alpaca::Versioning.find).to_s '%M.%m.%p'
+  s.version = ((Alpaca::Versioning.find).to_s '%M.%m.%p.%s').gsub('-', '')
   s.author = 'Vasyl Purchel'
   s.email = 'vasyl.purchel@gmail.com'
   s.homepage = 'https://github.com/vasyl-purchel/alpaca'

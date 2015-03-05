@@ -1,21 +1,66 @@
-#local_config: alpaca_local.yml
-#local_config: ['alpaca_local.yml', 'nuget.yml']
 local_config: '#{sln}/config.yml'
+Logger:
+  :info:
+    stamp: true
+    prefix: ' INFO: '
+    color: :black
+    background: :green
+  :warn:
+    stamp: true
+    prefix: ' WARN: '
+    color: :black
+    background: :green
+  :error:
+    stamp: true
+    prefix: ' ERROR: '
+    color: :black
+    background: :yellow
+  :log:
+    stamp: false
+    prefix: ''
+    color: :green
+    bright: true
+  :header:
+    stamp: false
+    prefix: "\x00"
+    color: :green
+    bright: true
+    artify: true
+    font: 'doom'
 MSBuild:
-  targets: ["Clean", "Rebuild"]
-  verbosity: "detailed"
-  no_logo: true
-  properties:
-    DebugSymbols: false
-    DebugType: 'None'
+  target: ["Clean", "Rebuild"]
+  verbosity: "minimal"
+  nologo: true
 Nuget:
-  exe: 'C:\Nuget\Nuget.exe'
-  alt_exe: 'mono --runtime=v4.0.30319 /usr/lib/nuget/nuget.exe'
-  config: 'C:\Nuget\NuGet.Config'
-  alt_config: '/usr/lib/nuget/nuget.config'
-  non_interactive: true
+  exe: 
+    :windows: 'C:\Nuget\Nuget.exe'
+    :linux: 'mono --runtime=v4.0.30319 /usr/lib/nuget/nuget.exe'
+  commands:
+    install:
+      non_interactive: true
+      config_file:
+        :windows: 'C:\Nuget\NuGet.Config'
+        :linux: '/usr/lib/nuget/nuget.config'
+NUnit:
+  exe: '#{sln}/packages/NUnit.Runners.2.6.2/tools/nunit-console.exe'
+  options:
+    nologo: true
+    process: 'Multiple'
+    noshadow: true
+    work: "#{sln}/../TestResults/UT"
+    config: "Release"
+    result: 'UnitTestsResult.xml'
+OpenCover:
+  exe: '#{sln}/packages/OpenCover.4.5.2506/OpenCover.Console.exe'
+  options:
+    register: 'user'
+    target: '#{EXE}'
+    targetargs: '#{ARGS}'
+    mergebyhash: true
+    output: '#{sln}/../TestResults/UT/coverage.xml'
 Gerrit:
-  host: 'gerrit.com'
-  port: '80'
-  key: '~/.ssh/id_rsa'
-  user: 'vasyl.purcel'
+  user: 'vasyl.purchel'
+  host: 'gerrit.alpaca.com'
+  options:
+    i: '~/.ssh/id_rsa'
+    p: '29418'

@@ -1,10 +1,10 @@
-require 'alpaca/base/logger'
+require 'alpaca/logger'
+
 module Alpaca
   # The *Solution* class provides method to:
   # - compile solution
   class Solution
-    include Logger
-    attr_accessor :file, :net_version
+    attr_accessor :file, :folder, :net_version
     attr_accessor :format_version
     attr_accessor :visual_studio_version, :minimum_visual_studio_version
     attr_accessor :projects
@@ -18,6 +18,7 @@ module Alpaca
     def initialize(file)
       @file = File.expand_path(file)
       fail "Can't find file #{@file}" unless File.exist?(@file)
+      @folder = File.dirname(@file)
       initialize_data
     end
 

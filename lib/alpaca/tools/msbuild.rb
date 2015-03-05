@@ -1,11 +1,11 @@
-require 'rbconfig'
-require 'alpaca/tools/msbuild_attribute_formatter'
+require 'alpaca/tools/console_application'
+require 'alpaca/tools/msbuild_formatter'
 
 module Alpaca
-  # The *MSBuild* class provides a wraper for
-  # MSBuild.exe (http://en.wikipedia.org/wiki/MSBuild)
+  # The *MSBuild* class provides access to msbuild.exe command line tool
   class MSBuild
-    include CommandLineTool
+    include ConsoleApplication
+    include MSBuildFormatter
     EXE = 'MSBuild.exe'
 
     # Creates instance of class for specified .Net Framework version
@@ -14,30 +14,7 @@ module Alpaca
     # - works with :net4, :net40, :net45, :net451
     # - fail for :net2, :net20, :net30, :net35
     def initialize(net_version = :net451)
-      @executable ||= get_executable(net_version)
-      super "\"#{@executable}\"", '/', ':', true, MSBuildAttributeFormatter.new
-    end
-
-    # Set property
-    # This is to update/set '/Propery:' parameter for
-    # command line
-    #
-    # +name+:: property name
-    # +value+:: property value
-    def set_property(name, value)
-      if @property
-        @property[name] = value
-      else
-        configure_attribute 'property', name => value
-      end
-    end
-
-    # Executes MSBuild.exe against solution
-    #
-    # +solution+:: solution file
-    # +&block+:: accepts block with configurations
-    def run(solution, config = nil)
-      super '', solution, config
+      super("\"#{get_executable net_version}\"")
     end
 
     private

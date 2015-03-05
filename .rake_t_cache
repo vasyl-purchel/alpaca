@@ -1,0 +1,13 @@
+rake build                 # Build alpaca-0.0.1.gem into the pkg directory
+rake clean                 # Remove any temporary products
+rake clobber               # Remove any generated file
+rake clobber_rdoc          # Remove RDoc HTML files
+rake features              # Run Cucumber features
+rake features:wip          # Run Cucumber features
+rake install               # Build and install alpaca-0.0.1.gem into system gems
+rake rdoc                  # Build RDoc HTML files
+rake release               # Create tag v0.0.1 and build and push alpaca-0.0.1.gem to Rubygems
+rake rerdoc                # Rebuild RDoc HTML files
+rake rubocop               # Run RuboCop
+rake rubocop:auto_correct  # Auto-correct RuboCop offenses
+rake test                  # Run RSpec code examples

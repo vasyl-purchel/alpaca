@@ -114,7 +114,7 @@ describe Alpaca::Versioning do
 
     context 'When base directory is passed' do
       let(:dir) { 'funny' }
-      subject { Alpaca::Versioning.find dir }
+      subject { Alpaca::Versioning.find nil, dir }
       before(:each) do
         FileUtils.mkdir_p(dir)
         open(File.join(dir, file), 'w') { |io| io.write content }
@@ -128,7 +128,7 @@ describe Alpaca::Versioning do
 
     context 'When file does not found' do
       let(:dir) { 'funny' }
-      subject { Alpaca::Versioning.find dir }
+      subject { Alpaca::Versioning.find nil, dir }
       before(:each) do
         open(file, 'w') { |io| io.write content }
       end
@@ -149,6 +149,22 @@ describe Alpaca::Versioning do
 
       it 'Then fails with InvalidSemVerFile' do
         expect { subject }.to raise_error Alpaca::Errors::InvalidSemVerFile
+      end
+    end
+
+    context 'When solution folder passed' do
+      let(:sln) do
+        cur = File.dirname(File.expand_path(__FILE__))
+        File.join(cur, '../test_data/sln1')
+      end
+      subject { Alpaca::Versioning.find sln }
+      before(:each) do
+        FileUtils.mkdir_p(sln)
+        open(File.join(sln, file), 'w') { |io| io.write content }
+      end
+
+      it 'Then returns Version instance' do
+        expect(subject).to be_an_instance_of(Alpaca::Version)
       end
     end
   end

@@ -1,7 +1,6 @@
-Feature: My bootstrapped app kinda works
-  In order to get going on coding my awesome app
-  I want to have aruba and cucumber setup
-  So I don't have to do it myself
+Feature: Alpaca app kinda works
+  In order to do anything with application I need to
+  be sure that it still runs ok
 
   Scenario: App just runs
     When I get help for "alpaca"

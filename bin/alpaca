@@ -1,107 +1,28 @@
 #!/usr/bin/env ruby
 require 'gli'
 require 'alpaca'
-require 'alpaca/entity/solution'
-require 'alpaca/tools/nuget'
-require 'alpaca/tools/gerrit'
-require 'alpaca/tools/msbuild'
-require 'alpaca/base/logger'
-require 'alpaca/factories/configuration_factory'
-require 'yaml'
 
 include GLI::App
 
-program_desc 'Custom build tool'
+program_desc 'Alpaca is a new build tool'
 
-version Alpaca::Versioning.find.to_s '%M.%m.%p'
+semver = File.join(Alpaca::LIB_DIR, '../.semver')
+version Alpaca::Versioning.parse(semver).to_s
+
+SLN = Alpaca::SolutionFactory
+CONF = Alpaca::ConfigFactory
+LOG = Alpaca::Log
 
 subcommand_option_handling :normal
 arguments :strict
 
-desc 'Initialize new solution'
-arg_name 'Describe arguments to init here'
-command :init do |c|
-  c.desc 'Describe a switch to init'
-  c.switch :s
-
-  c.desc 'Describe a flag to init'
-  c.default_value 'default'
-  c.flag :f
-  c.action do |global_options, options, args|
-    puts "init command ran with #{global_options}, #{options}, #{args}"
-    conf = Alpaca::ConfigurationFactory['Gerrit']
-    g = Alpaca::Gerrit.new conf
-    g.create_project(args[0], args[1])
-  end
+Dir.glob(File.join(Alpaca::LIB_DIR, 'alpaca/commands/*.rb')) do |f|
+  load f
 end
 
-desc 'Compile solution'
-arg_name 'solution_name'
-command :compile do |c|
-  c.desc 'Build solution in Debug mode'
-  c.switch :d
-
-  c.action do |_, options, args|
-    Alpaca::Log.header "\x00Compile"
-    Alpaca::Log.info 'info'
-    Alpaca::Log.warn 'warn'
-    Alpaca::Log.error 'error'
-    conf = ('Debug' if options[:d]) || 'Release'
-    args = ['**/*.sln'] if args == []
-    Dir.glob(args).each do |file|
-      s = Alpaca::Solution.new file
-      Alpaca::Log.info "\n" + s.to_s
-      puts Alpaca::ConfigurationFactory['MSBuild', s.file]
-    end
-  end
-end
-
-desc 'Test solution'
-arg_name 'Describe arguments to test here'
-command :test do |c|
-  c.action do
-    puts 'test command ran'
-  end
-end
-
-desc 'Describe pack here'
-arg_name 'Describe arguments to pack here'
-command :pack do |c|
-  c.action do
-    puts 'pack command ran'
-  end
-end
-
-desc 'Describe push here'
-arg_name 'Describe arguments to push here'
-command :push do |c|
-  c.action do
-    puts 'push command ran'
-  end
-end
-
-desc 'Describe promote here'
-arg_name 'Describe arguments to promote here'
-command :promote do |c|
-  c.action do
-    puts 'promote command ran'
-  end
-end
-
-desc 'Describe log here'
-arg_name 'Describe arguments to log here'
-command :log do |c|
-  c.action do
-    puts 'log command ran'
-  end
-end
-
-desc 'Describe review here'
-arg_name 'Describe arguments to review here'
-command :review do |c|
-  c.action do
-    puts 'review command ran'
-  end
+on_error do |exception|
+  puts exception.backtrace
+  true
 end
 
 exit run(ARGV)

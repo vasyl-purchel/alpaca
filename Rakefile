@@ -6,6 +6,26 @@ require 'rubygems/package_task'
 require 'rdoc/task'
 require 'cucumber'
 require 'cucumber/rake/task'
+require 'benchmark'
+require 'rainbow'
+require 'rainbow/ext/string' unless String.method_defined?(:color)
+
+module Rake
+  # Redefining rake task to show benchmarking
+  class Task
+    def execute_with_benchmark(*args)
+      bench = Benchmark.measure do
+        execute_without_benchmark(*args)
+      end
+      puts '###########################################################'
+      puts "#{name} --> #{bench}"
+      puts '###########################################################'
+    end
+    alias_method :execute_without_benchmark, :execute
+    alias_method :execute, :execute_with_benchmark
+  end
+end
+
 Rake::RDocTask.new do |rd|
   rd.main = 'README.rdoc'
   rd.rdoc_files.include('README.rdoc', 'lib/**/*.rb', 'bin/**/*')
@@ -39,11 +59,14 @@ task 'cucumber:wip' => 'features:wip'
 task wip: 'features:wip'
 
 require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new(:test)
+RSpec::Core::RakeTask.new(:test) do |task|
+  task.rspec_opts = '--color --format documentation'
+end
 
 require 'rubocop/rake_task'
-RuboCop::RakeTask.new
+RuboCop::RakeTask.new(:rubocop) do |task|
+  task.formatters = %w(simple html)
+  task.options << '-ooffences.html'
+end
 
-task default: [:test, :rubocop]
-# should be: task default: [:features, :test, :rubocop]
-# but for now features are not working
+task default: [:rubocop, :test, :features]
