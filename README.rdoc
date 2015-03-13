@@ -1,6 +1,9 @@
 = alpaca
 
-Describe your project here
+Learning ruby
+
+documentation is generated here:
+http://www.rubydoc.info/github/vasyl-purchel/alpaca/master/Alpaca/Versioning
 
 :include:alpaca.rdoc
 
