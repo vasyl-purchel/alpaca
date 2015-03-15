@@ -57,7 +57,7 @@ OpenCover:
     target: '#{EXE}'
     targetargs: '#{ARGS}'
     mergebyhash: true
-    output: '#{sln}/../TestResults/UT/coverage.xml'
+    output: '#{sln}/../TestResults/Unit/coverage.xml'
 Gerrit:
   user: 'vasyl.purchel'
   host: 'gerrit.alpaca.com'
