@@ -1,0 +1,6 @@
+=alpaca
+{<img src="https://travis-ci.org/vasyl-purchel/alpaca.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/vasyl-purchel/alpaca]
+
+Learning ruby
+
+:include alpaca.rdoc
