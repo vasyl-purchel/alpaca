@@ -16,9 +16,7 @@ LOG = Alpaca::Log
 subcommand_option_handling :normal
 arguments :strict
 
-Dir.glob(File.join(Alpaca::LIB_DIR, 'alpaca/commands/*.rb')) do |f|
-  load f
-end
+Dir.glob(File.join(Alpaca::LIB_DIR, 'alpaca/commands/*.rb')){ |f| load f }
 
 on_error do |exception|
   puts exception.backtrace
