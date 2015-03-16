@@ -5,8 +5,8 @@ describe Alpaca::Solution do
   let(:sln) do
     cur = File.dirname(File.expand_path(__FILE__))
     {
-      file: File.join(cur, '../test_data/sln1', 'TestSolution.sln'),
-      file_path: File.expand_path('spec/test_data/sln1/TestSolution.sln'),
+      file: File.join(cur, '../../test_data/sln1', 'TestSolution.sln'),
+      file_path: File.expand_path('test_data/sln1/TestSolution.sln'),
       format_version: '12.00',
       vs_version: '12.0.30723.0',
       min_vs_version: '10.0.40219.1',
@@ -61,7 +61,7 @@ describe Alpaca::SolutionFactory do
     context 'when no exclude parameter passed' do
       it 'returns 3 solutions' do
         solutions = 0
-        Alpaca::SolutionFactory.find 'spec/test_data/**/*.sln' do |s|
+        Alpaca::SolutionFactory.find 'test_data/**/*.sln' do |s|
           expect(s).to be_an_instance_of Alpaca::Solution
           solutions += 1
         end
@@ -73,7 +73,7 @@ describe Alpaca::SolutionFactory do
       it 'returns 2 solutions' do
         solutions = 0
         allow(Alpaca::Log).to receive(:warn)
-        Alpaca::SolutionFactory.find 'spec/test_data/**/*.sln', 'nobuild' do |s|
+        Alpaca::SolutionFactory.find 'test_data/**/*.sln', 'nobuild' do |s|
           expect(s).to be_an_instance_of Alpaca::Solution
           solutions += 1
         end

@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.summary = 'just learning ruby'
   s.files = `git ls-files -z`.split("\x0")
-  s.test_files = s.files.grep(/^(test|spec|features)/)
+  s.test_files = s.files.grep(/^(test|spec|features|test_data)/)
   s.require_paths << 'lib'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.rdoc', 'alpaca.rdoc']
