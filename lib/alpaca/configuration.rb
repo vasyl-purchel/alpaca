@@ -1,11 +1,76 @@
+require 'alpaca/entities/config'
 require 'yaml'
 
 module Alpaca
-  # The *Config* class contains configuration built around Hash
-  # by overriding it with local solution configurations
-  class Config
-    LC_KEY = 'local_config'
+  # The *ConfigFactory* module provides access to
+  # configurations.
+  # It uses Singelton pattern to prevent from loading
+  # configurations few times
+  class Configuration
+    DEFAULT = File.join(Alpaca::LIB_DIR, 'alpaca/data/alpaca.yml')
+    GLOBAL = File.expand_path('~/.alpaca.yml')
     CLEAN_CONFIGURATION_KEY = 'clean_configuration'
+    LOCAL_CONFIGURATION_KEY = 'local_config'
+
+    CONFIGURATION_VARIABLES = [
+      '#{SOLUTION_DIRECTORY}',
+      '#{SOLUTION_NAME}'
+    ]
+
+    def initialize(hash = nil)
+      return @configuration = hash.dup if hash
+      default = YAML.load(File.open(DEFAULT))
+      global = YAML.load(File.open(GLOBAL))
+      @configuration = merge(default, global)
+    end
+
+    def for(solution)
+      configuration = detokenize(@configuration, solution)
+      local_configuration_dir = @configuration.fetch(LOCAL_CONFIGURATION_KEY)
+      local_configuration_dir = local_configuration_dir
+    end
+
+    private
+
+    def merge(h1, h2)
+      return clean(h2) if clean?(h2)
+      h1.merge(h2) { |_, o, n| o.is_a?(Hash) ? merge(o, n) : n }
+    end
+
+    def clean?(hash)
+      hash.key? CLEAN_CONFIGURATION_KEY
+    end
+
+    def clean(hash)
+      hash.delete CLEAN_CONFIGURATION_KEY
+      hash
+    end
+
+    def detokenize(config, solution)
+      config = detokenize_os(config) if config.is_a? Hash
+      return detokenize_string(config, solution) if config.is_a? String
+      return config.map { |i| detokenize(i, solution) } if config.is_a? Array
+      return detokenize_hash(config, solution) if config.is_a? Hash
+      config
+    end
+
+    def detokenize_os(value)
+      (value.is_a?(Hash) && value[Os.os]) value[Os.os] : value
+    end
+
+    def detokenize_string(value, solution)
+      value = value.gsub('#{SOLUTION_DIRECTORY}', solution.folder)
+      value.gsub('#{SOLUTION_NAME}', File.basename(solution.file, '.*'))
+    end
+
+    def detokenize_hash(value, solution)
+      value.keys.each { |key| value[key] = detokenize(value[key], solution) }
+      value
+    end
+  end
+
+  class SolutionConfiguration
+    LC_KEY = 'local_config'
 
     attr_reader :config
 

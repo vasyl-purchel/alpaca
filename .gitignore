@@ -25,3 +25,6 @@ offences.html
 
 ## rdoc
 /html/
+
+## bash autocompletion
+.rake_t_cache
