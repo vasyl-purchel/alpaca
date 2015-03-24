@@ -2,25 +2,108 @@
 require 'gli'
 require 'alpaca'
 
-include GLI::App
+module Alpaca # The *CommandLineApplication* module provides command
+  # line interface by using GLI::App
+  module CommandLineApplication
+    include GLI::App
+    extend self
 
-program_desc 'Alpaca is a new build tool'
+    program_desc 'is a build tool for Visual Studio and Unity3D solutions'
+    subcommand_option_handling :normal
+    arguments :strict
+    version Versioning.parse(File.join(LIB_DIR, '../.semver')).to_s
 
-semver = File.join(Alpaca::LIB_DIR, '../.semver')
-version Alpaca::Versioning.parse(semver).to_s
+    on_error do |exception|
+      puts exception.backtrace
+      true
+    end
 
-SLN = Alpaca::SolutionFactory
-CONF = Alpaca::ConfigFactory
-LOG = Alpaca::Log
+    desc 'Solutions search pattern'
+    default_value DEFAULT_SOLUTIONS_PATTERN
+    flag [:p, :pattern]
 
-subcommand_option_handling :normal
-arguments :strict
+    # desc 'Report to gerrit review'
+    # default_value false
+    # switch :g, :gerrit
 
-Dir.glob(File.join(Alpaca::LIB_DIR, 'alpaca/commands/*.rb')) { |f| load f }
+    desc 'Compile solution[s]'
+    long_desc 'Compiling each solution founded from pattern in global options'
+    command :compile do |c|
+      c.desc 'Build solution in Debug mode'
+      c.switch :d, :debug
 
-on_error do |exception|
-  puts exception.backtrace
-  true
+      c.action do |global, options, _|
+        Application.new.compile(pattern: global[:p],
+                                debug: options[:d] || false)
+      end
+    end
+
+    desc 'Test solution[s]'
+    long_desc 'Testing each solution founded from pattern in global options'
+    command :test do |c|
+      c.desc 'Test solution in Debug mode'
+      c.switch :d, :debug, negatable: false
+
+      c.desc 'Run tests with coverage'
+      c.switch [:c, :coverage]
+
+      c.desc 'Test category'
+      c.default_value 'all'
+      c.flag :t, :type, :category
+
+      c.action do |global, options, _|
+        Application.new.test(pattern: global[:p],
+                             debug: options[:d] || false,
+                             coverage: options[:c] || false,
+                             category: options[:t])
+      end
+    end
+
+    desc 'Generate reports for solution[s]'
+    long_desc 'Generate reports for all founded results for solutions'
+    command :report do |c|
+      c.desc 'Report category'
+      c.default_value 'all'
+      c.flag :c, :category
+
+      c.action do |global, options, _|
+        Application.new.report(pattern: global[:p],
+                               category: options[:c])
+      end
+    end
+
+    desc 'Create packages for solution[s]'
+    long_desc 'Create new packages for solutions'
+    command :pack do |c|
+      c.action do |global, _, _|
+        Application.new.pack(pattern: global[:p])
+      end
+    end
+
+    desc 'Release packages for solution[s]'
+    long_desc 'Update package to release version and push it'
+    command :release do |c|
+      c.desc 'Push to the source after released'
+      c.switch :p, :push, default_value: true
+
+      c.action do |global, options, _|
+        Application.new.release(pattern: global[:p],
+                                push: options[:p])
+      end
+    end
+
+    desc 'Push generated packages for solution[s]'
+    long_desc 'Pushes last generated packages for all founded solutions'
+    command :push do |c|
+      c.desc 'Force push without checks if it has new changes'
+      c.switch :f, :force
+
+      c.action do |global, options, _|
+        Application.new.push(pattern: global[:p],
+                             force: options[:f])
+      end
+    end
+  end
 end
 
-exit run(ARGV)
+exit Alpaca::CommandLineApplication.run(ARGV)

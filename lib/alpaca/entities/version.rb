@@ -1,5 +1,3 @@
-require 'alpaca/errors'
-
 module Alpaca
   # The *Version* class contains semantic version and methods
   # for updating it
@@ -7,6 +5,12 @@ module Alpaca
     attr_reader :major, :minor, :patch, :special, :metadata, :file
     attr_writer :metadata
     PRE_RELEASE = %w(alpha beta rc)
+
+    errors = %w(InvalidFile WrongDimension AlreadyPreRelease AlreadyRelease
+                FileNotFound MajorVersionNotInt MinorVersionNotInt
+                PatchVersionNotInt SpecialNotRecognized NotPreRelease
+                PreReleaseTagReachedFinalVersion)
+    errors.each { |error| const_set(error, Class.new(StandardError)) }
 
     # Creates new instance
     #
@@ -18,12 +22,12 @@ module Alpaca
     # :special - special version
     # :metadata - metadata
     def initialize(hash)
-      @file = hash.fetch(:file) { fail Errors::InvalidSemVerFile }
-      @major = hash.fetch(:major) { fail Errors::InvalidSemVerFile }
-      @minor = hash.fetch(:minor) { fail Errors::InvalidSemVerFile }
-      @patch = hash.fetch(:patch) { fail Errors::InvalidSemVerFile }
-      @special = hash.fetch(:special) { fail Errors::InvalidSemVerFile }
-      @metadata = hash.fetch(:metadata) { fail Errors::InvalidSemVerFile }
+      @file = hash.fetch(:file) { fail InvalidFile }
+      @major = hash.fetch(:major) { fail InvalidFile }
+      @minor = hash.fetch(:minor) { fail InvalidFile }
+      @patch = hash.fetch(:patch) { fail InvalidFile }
+      @special = hash.fetch(:special) { fail InvalidFile }
+      @metadata = hash.fetch(:metadata) { fail InvalidFile }
       validate
     end
 
@@ -84,19 +88,19 @@ module Alpaca
       when :minor then increase_minor
       when :patch then increase_patch
       when :prerelease then increase_prerelease
-      else fail WrongVersionDimension
+      else fail WrongDimension
       end
     end
 
     # Set version to prerelease by adding 'alpha' to special
     def make_prerelease
-      fail Errors::AlreadyPreReleaseVersion if prerelease?
+      fail AlreadyPreRelease if prerelease?
       @special = PRE_RELEASE.first
     end
 
     # Clear special and metadata so version become higher and not prerelease
     def release
-      fail Errors::AlreadyReleaseVersion unless prerelease?
+      fail AlreadyRelease unless prerelease?
       @special = ''
       @metadata = ''
     end
@@ -104,11 +108,11 @@ module Alpaca
     private
 
     def validate
-      fail Errors::FileNotFound unless File.exist?(@file)
-      fail Errors::MajorVersionNotInt unless @major.is_a?(Integer)
-      fail Errors::MinorVersionNotInt unless @minor.is_a?(Integer)
-      fail Errors::PatchVersionNotInt unless @patch.is_a?(Integer)
-      fail Errors::SpecialNotRecognized unless valid_special?
+      fail FileNotFound unless File.exist?(@file)
+      fail MajorVersionNotInt unless @major.is_a?(Integer)
+      fail MinorVersionNotInt unless @minor.is_a?(Integer)
+      fail PatchVersionNotInt unless @patch.is_a?(Integer)
+      fail SpecialNotRecognized unless valid_special?
     end
 
     def valid_special?
@@ -131,16 +135,16 @@ module Alpaca
     end
 
     def increase_prerelease
-      fail Errors::NotPreRelease unless prerelease?
+      fail NotPreRelease unless prerelease?
       tmp = ''
-      PRE_RELEASE.each do |v|
+      PRE_RELEASE.each do |version|
         if @special == tmp
-          @special = v
+          @special = version
           return
         end
-        tmp = v
+        tmp = version
       end
-      fail Errors::PreReleaseTagReachedFinalVersion
+      fail PreReleaseTagReachedFinalVersion
     end
   end
 end

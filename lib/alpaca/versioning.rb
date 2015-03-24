@@ -1,7 +1,6 @@
 require 'fileutils'
 require 'yaml'
 require 'pathname'
-require 'alpaca/errors'
 require 'alpaca/entities/version'
 
 module Alpaca
@@ -9,6 +8,7 @@ module Alpaca
   # for solutions
   module Versioning
     FILE_NAME = '.semver'
+    SemVerFileNotFound = Class.new(StandardError)
 
     # Initializes semantic versioning
     #
@@ -34,7 +34,7 @@ module Alpaca
     def self.find(solution_folder = nil, dir = '')
       solution_folder = Pathname.new(solution_folder) if solution_folder
       semver = find_file FILE_NAME, dir, solution_folder || Pathname.new('.')
-      fail Errors::SemVerFileNotFound if semver.nil?
+      fail SemVerFileNotFound if semver.nil?
       hash = YAML.load_file(semver) || {}
       hash[:file] = semver
       Version.new hash

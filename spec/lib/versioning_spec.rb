@@ -1,17 +1,8 @@
 require 'fakefs/spec_helpers'
-require 'alpaca/errors'
 require 'alpaca/versioning'
 
 describe Alpaca::Versioning do
   include FakeFS::SpecHelpers
-  module FakeFS
-    # Extending FakeFS to File.find method
-    class File
-      def self.find(name, dir = '', cur = Pathname.new('.'))
-        Alpaca.find_file(name, dir, cur)
-      end
-    end
-  end
   describe '::init' do
     let(:content) do
       "---\n:major: 0\n:minor: 0\n:patch: 0\n:special: ''\n:metadata: ''\n"
@@ -134,7 +125,7 @@ describe Alpaca::Versioning do
       end
 
       it 'Then fails with SemVerFileNotFound' do
-        expect { subject }.to raise_error Alpaca::Errors::SemVerFileNotFound
+        expect { subject }.to raise_error Alpaca::Versioning::SemVerFileNotFound
       end
     end
 
@@ -148,7 +139,7 @@ describe Alpaca::Versioning do
       end
 
       it 'Then fails with InvalidSemVerFile' do
-        expect { subject }.to raise_error Alpaca::Errors::InvalidSemVerFile
+        expect { subject }.to raise_error Alpaca::Version::InvalidFile
       end
     end
 
@@ -242,12 +233,12 @@ describe Alpaca::Version do
     it 'v1.2.3-rc+03fb4 -> fail PreReleaseTagReachedFinalVersion' do
       v = Alpaca::Version.new(set_version 1, 2, 3, 'rc', '03fb4')
       expect { v.increase :prerelease }
-        .to raise_error(Alpaca::Errors::PreReleaseTagReachedFinalVersion)
+        .to raise_error(Alpaca::Version::PreReleaseTagReachedFinalVersion)
     end
     it 'v1.2.3 -> fail NotPreRelease' do
       v = Alpaca::Version.new(set_version 1, 2, 3, '', '')
       expect { v.increase :prerelease }
-        .to raise_error(Alpaca::Errors::NotPreRelease)
+        .to raise_error(Alpaca::Version::NotPreRelease)
     end
   end
   describe '#metadata 334f666' do
@@ -266,7 +257,7 @@ describe Alpaca::Version do
     it 'v1.2.3 -> fail AlreadyReleaseVersion' do
       v = Alpaca::Version.new(set_version 1, 2, 3, '', '')
       expect { v.release }
-        .to raise_error(Alpaca::Errors::AlreadyReleaseVersion)
+        .to raise_error(Alpaca::Version::AlreadyRelease)
     end
   end
   describe '#make_prerelease' do
