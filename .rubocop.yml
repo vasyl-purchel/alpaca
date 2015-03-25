@@ -1,3 +1,6 @@
 Style/ModuleFunction:
   Exclude:
     - bin/alpaca
+AllCops:
+  Exclude:
+    - features/step_definitions/visual_studio_solutions_steps.rb

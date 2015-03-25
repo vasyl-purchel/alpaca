@@ -7,7 +7,7 @@ module Alpaca
   class Application
     include Log
 
-    def compile(pattern: DEFAULT_SOLUTIONS_PATTERN, debug: false)
+    def compile(pattern = DEFAULT_SOLUTIONS_PATTERN, debug = false)
       header 'Compile'
       Solutions.each(pattern) do |solution|
         log solution
@@ -15,10 +15,10 @@ module Alpaca
       end
     end
 
-    def test(pattern: DEFAULT_SOLUTIONS_PATTERN,
-             debug: false,
-             coverage: false,
-             category: 'all')
+    def test(pattern = DEFAULT_SOLUTIONS_PATTERN,
+             debug = false,
+             coverage = false,
+             category = 'all')
       header 'Test'
       Solutions.each(pattern) do |solution|
         log solution
@@ -26,7 +26,7 @@ module Alpaca
       end
     end
 
-    def report(pattern: DEFAULT_SOLUTIONS_PATTERN, category: 'all')
+    def report(pattern = DEFAULT_SOLUTIONS_PATTERN, category = 'all')
       header 'Report'
       Solutions.each(pattern) do |solution|
         log solution
@@ -34,7 +34,7 @@ module Alpaca
       end
     end
 
-    def pack(pattern: DEFAULT_SOLUTIONS_PATTERN)
+    def pack(pattern = DEFAULT_SOLUTIONS_PATTERN)
       header 'Pack'
       Solutions.each(pattern) do |solution|
         log solution
@@ -42,7 +42,7 @@ module Alpaca
       end
     end
 
-    def release(pattern: DEFAULT_SOLUTIONS_PATTERN, push: true)
+    def release(pattern = DEFAULT_SOLUTIONS_PATTERN, push = true)
       header 'Release'
       Solutions.each(pattern) do |solution|
         log solution
@@ -50,7 +50,7 @@ module Alpaca
       end
     end
 
-    def push(pattern: DEFAULT_SOLUTIONS_PATTERN, force: false)
+    def push(pattern = DEFAULT_SOLUTIONS_PATTERN, force = false)
       header 'Push'
       Solutions.each(pattern) do |solution|
         log solution
