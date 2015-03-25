@@ -3,6 +3,6 @@
 
 Alpaca - is a build tool for Visual Studio and Unity3D solutions
 
-![Alpaca logo](https://github.com/vasyl-purchel/alpaca/raw/master/lib/data/logo.jpg "Alpaca is here")
+![Alpaca logo](https://raw.githubusercontent.com/vasyl-purchel/alpaca/master/lib/alpaca/data/logo.jpg "Alpaca is here")
 
 [documentation](http://www.rubydoc.info/github/vasyl-purchel/alpaca/master/Alpaca/Versioning)
