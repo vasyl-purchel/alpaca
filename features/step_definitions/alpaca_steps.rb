@@ -1,14 +1,11 @@
-require 'rbconfig'
-case RbConfig::CONFIG['host_os']
-when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
-  @prefix = 'bundle exec ruby '
-else
-  @prefix = ''
+When(/^I run "(.*?)"$/) do |command_line|
+  call = "#{@prefix} #{command_line}"
+  @call_result = `#{call}`
 end
 
 When(/I get help for "(.*)"/) do |app_name|
   @app_name = app_name
-  `#{app_name} help`
+  step %(I run "#{@app_name} help")
 end
 
 Then(/the exit status should be (.*)/) do |status|

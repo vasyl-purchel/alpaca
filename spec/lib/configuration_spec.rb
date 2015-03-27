@@ -65,9 +65,16 @@ describe Alpaca::Configuration do
     let(:solution) do
       solution = OpenStruct.new
       solution.file = File.join(file_path, 'some.sln')
+      solution.dir = file_path
       solution
     end
     subject do
+      data_dir = Alpaca::Configuration.const_get(:DATA_DIR)
+      default_config = File.join(data_dir, '.alpaca.conf')
+      FileUtils.mkdir_p File.dirname(default_config)
+      File.open(default_config, 'w+') do |f|
+        f.write "---\nlocal_configuration: '.alpaca.conf'"
+      end
       c = Alpaca::Configuration.new solution
       c.set properties
     end
@@ -118,31 +125,66 @@ describe Alpaca::Configuration do
   describe '.new' do
     context 'when global configuration exist' do
       context 'and local configuration overrides it' do
+        let(:default_config) do
+          data_dir = Alpaca::Configuration.const_get(:DATA_DIR)
+          File.join(data_dir, '.alpaca.conf')
+        end
         let(:global_config) { File.expand_path '~/.alpaca.conf' }
         let(:global_content) do
-          <<EOF
----
-local_config: "#{SOLUTION_FOLDER}/.alpaca.conf"
-Tool:
-  property: old_value
-  target: "#{SOLUTION_NAME}"
-EOF
+          "---\nlocal_configuration: '.alpaca.conf'\n"\
+            "Tool:\n  property: old_value\n  target: "\
+            "'\#{solution_name}.new'\n  property2:\n    "\
+            ":windows: '\#{solution_directory}'\n    "\
+            ":linux: '/usr/alpaca'"
         end
         let(:local_config) { File.expand_path 'c:\alpaca\.alpaca.conf' }
+        let(:local_content) { "---\nTool:\n  property: new_value" }
         let(:solution) do
           solution = OpenStruct.new
           solution.file = 'c:\alpaca\alpaca.sln'
+          solution.dir = 'c:\alpaca'
           solution
         end
-        before(:each) do
+        subject { Alpaca::Configuration.new solution }
+
+        def create_config(file, content)
           FileUtils.mkdir_p(File.dirname(file))
           File.open(file, 'w+') { |f| f.write content }
         end
 
-        it 'merges global with local with higher priority to local'
-        it 'detokenize OS from configuration'
-        it 'detokenize solution variable SOLUTION_NAME'
-        it 'detokenize solution variable SOLUTION_FOLDER'
+        before(:each) do
+          create_config default_config, "---\n"
+          create_config global_config, global_content
+          create_config local_config, local_content
+          gc_var = :@@global_configuration
+          if Alpaca::Configuration.class_variable_defined? gc_var
+            Alpaca::Configuration.remove_class_variable gc_var
+          end
+          allow(Alpaca::Os).to receive(:os).and_return(:windows)
+        end
+
+        it 'merges global with local with higher priority to local' do
+          value = subject.instance_variable_get(:@configuration)
+          expect(value['local_configuration']).to eq '.alpaca.conf'
+          expect(value['Tool']['property']).to eq 'new_value'
+          expect(value['Tool']['target']).to_not be nil
+          expect(value['Tool']['property2']).to_not be nil
+        end
+
+        it 'detokenize OS from configuration' do
+          value = subject.instance_variable_get(:@configuration)
+          expect(value['Tool']['property2']).to_not eq 'usr/alpaca'
+        end
+
+        it 'detokenize solution variable #{solution_name}' do
+          value = subject.instance_variable_get(:@configuration)
+          expect(value['Tool']['target']).to eq 'alpaca.new'
+        end
+
+        it 'detokenize solution variable #{solution_directory}' do
+          value = subject.instance_variable_get(:@configuration)
+          expect(value['Tool']['property2']).to eq 'c:\alpaca'
+        end
       end
     end
   end

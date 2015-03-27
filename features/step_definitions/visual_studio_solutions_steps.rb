@@ -1,73 +1,67 @@
-
-When(/^I run "(.*?)"$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca update AssemblyInfo files for (.*?)$/) do |solution_file|
+  solution_dir = File.dirname File.expand_path(solution_file)
+  git_changes = `git diff --name-only #{solution_dir}`.split("\n")
+  expect(git_changes.length).to be >= 1
+  git_changes.each do |change|
+    expect(change.include? 'AssemblyInfo').to eq true
+  end
 end
 
-Then(/^alpaca update AssemblyInfo files for test_data\/sln(\d+)\/TestSolution\.sln$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca build file (.*?)$/) do |project_file|
+  proj = File.basename(project_file, '.*')
+  build_project = /#{proj} -> (.*?)\\#{project_file}/
+  expect(@call_result.match(build_project)).to_not be nil
 end
 
-Then(/^alpaca build solution test_data\/sln(\d+)\/TestSolution\.sln$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca do not build file (.*?)$/) do |project_file|
+  proj = File.basename(project_file, '.*')
+  build_project = /#{proj} -> (.*?)\\#{project_file}/
+  expect(@call_result.match(build_project)).to be nil
 end
 
-Then(/^alpaca do not build solution test_data\/sln(\d+)\/TestSolution\.nobuild\.sln$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca restore nuget packages for (.*?)$/) do |solution_file|
+  solution_dir = File.dirname(File.expand_path(solution_file))
+  nuget_call = /Nuget.exe  restore  #{File.expand_path(solution_file)}/
+  expect(@call_result.match(nuget_call)).to_not be nil
+  expect(Dir.glob(solution_dir + '/packages/*').count).to be > 0
 end
 
-Then(/^alpaca update AssemblyInfo files for test_data\/sln(\d+)\/SolutionName\.sln$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca run tests for (.*?)$/) do |solution_file|
+  pending "check that tests were runned for #{solution_file}"
 end
 
-Then(/^alpaca restore nuget packages for test_data\/sln(\d+)\/SolutionName\.sln$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca generate unit test results (.*?)$/) do |results_file|
+  pending "check that #{results_file} was generated"
 end
 
-Then(/^alpaca build solution test_data\/sln(\d+)\/SolutionName\.sln$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca generate test coverage summary for (.*?)$/) do |summary_file|
+  pending "check that #{summary_file} was generated"
 end
 
-Then(/^alpaca run tests for test_data\/sln(\d+)\/SolutionName\.sln$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca generate coverage report (.*?)$/) do |index_file|
+  pending "check that #{index_file} was generated"
 end
 
-Then(/^alpaca generate unit test results test_data\/sln(\d+)\/TR\/tests\.xml$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca creates (.*?)$/) do |package|
+  pending "check that #{package} was created"
 end
 
-Then(/^alpaca generate test coverage summary for test_data\/sln(\d+)\/TR\/coverage\.xml$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca commit (.*?) file to git$/) do |semver_file|
+  pending "check that #{semver_file} was committed"
 end
 
-Then(/^alpaca generate coverage report test_data\/sln(\d+)\/TR\/index\.html$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca download latest package (.*?)$/) do |package|
+  pending "check that #{package} was downloaded"
 end
 
-Then(/^alpaca creates Sln(\d+)Tool\.(\d+)\.(\d+)\.(\d+)\.alpha\.nupkg$/) do |arg1, arg2, arg3, arg4|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca repack it as (.*?)$/) do |package|
+  pending "check that it was repacked as #{package}"
 end
 
-Then(/^alpaca commit test_data\/sln(\d+)\/\.semver file to git$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca change inner (.*?) version to ([\d\.]+)$/) do |file, version|
+  pending "check that #{file} in generated package contains #{version} version"
 end
 
-Then(/^alpaca creates Sln(\d+)Project\.(\d+)\.(\d+)\.(\d+)\.rc\.nupkg$/) do |arg1, arg2, arg3, arg4|
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-Then(/^alpaca download latest package Sln(\d+)Tool\.(\d+)\.(\d+)\.(\d+)\.alpha$/) do |arg1, arg2, arg3, arg4|
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-Then(/^alpaca repack it as Sln(\d+)Tool\.(\d+)\.(\d+)\.(\d+)$/) do |arg1, arg2,
-arg3, arg4|
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-Then(/^alpaca change inner Sln(\d+)Tool\.nuspec version to (\d+)\.(\d+)\.(\d+)$/) do |arg1, arg2, arg3, arg4|
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-Then(/^alpaca push package Sln(\d+)Tool\.(\d+)\.(\d+)\.(\d+)\.alpha\.nupkg$/) do |arg1, arg2, arg3, arg4|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^alpaca push package (.*?)$/) do |package|
+  pending "check that #{package} was pushed"
 end

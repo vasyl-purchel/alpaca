@@ -1,6 +1,12 @@
 Style/ModuleFunction:
   Exclude:
     - bin/alpaca
+Style/ClassVars:
+  Exclude:
+    - lib/alpaca/configuration.rb
 AllCops:
   Exclude:
-    - features/step_definitions/visual_studio_solutions_steps.rb
+    - vendor/**/*
+Style/GlobalVars:
+  Exclude:
+    - lib/alpaca/tools/console_tool.rb

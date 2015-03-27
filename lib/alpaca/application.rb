@@ -5,6 +5,8 @@ module Alpaca
   # Class *Application* provides methods that can
   # be used by CLI and from REPL sessions
   class Application
+    DEFAULT_SOLUTIONS_PATTERN = ['**/*.sln', '**/Assets']
+
     include Log
 
     def compile(pattern = DEFAULT_SOLUTIONS_PATTERN, debug = false)
@@ -55,6 +57,19 @@ module Alpaca
       Solutions.each(pattern) do |solution|
         log solution
         solution.push(force)
+      end
+    end
+
+    def configure_global(properties)
+      header 'Configure'
+      Configuration.set(properties)
+    end
+
+    def configure_local(pattern = DEFAULT_SOLUTIONS_PATTERN, properties)
+      header 'Configure'
+      Solutions.each(pattern) do |solution|
+        log solution
+        Configuration.new(solution).set(properties)
       end
     end
   end

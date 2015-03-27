@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rake')
   s.add_development_dependency('rdoc')
   s.add_development_dependency('cucumber', '~> 2.0.0.rc.3')
-  s.add_development_dependency('aruba')
   s.add_development_dependency('rspec')
   s.add_development_dependency('fakefs')
   s.add_development_dependency('rubocop')

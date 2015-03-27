@@ -13,8 +13,16 @@ module Alpaca
     # +net_version+:: .Net Framework version (net451 by default)
     # - works with :net4, :net40, :net45, :net451
     # - fail for :net2, :net20, :net30, :net35
-    def initialize(net_version = :net451)
+    def initialize(configuration, net_version = :net451)
+      @configuration = configuration
       super("\"#{get_executable net_version}\"")
+    end
+
+    def build(solution, debug)
+      config = @configuration.dup
+      config['Property'] ||= {}
+      config['Property']['Configuration'] = debug ? 'Debug' : 'Release'
+      execute(config, [solution])
     end
 
     private

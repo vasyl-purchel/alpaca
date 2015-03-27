@@ -2,16 +2,18 @@
 require 'gli'
 require 'alpaca'
 
-module Alpaca # The *CommandLineApplication* module provides command
+module Alpaca
+  # The *GliWrapper* module provides command
   # line interface by using GLI::App
-  module CommandLineApplication
+  module GliWrapper
     include GLI::App
     extend self
 
     program_desc 'is a build tool for Visual Studio and Unity3D solutions'
     subcommand_option_handling :normal
     arguments :strict
-    version Versioning.parse(File.join(LIB_DIR, '../.semver')).to_s
+    gem_path = File.join(File.expand_path(File.dirname(__FILE__)), '..')
+    version Versioning.parse(File.join(gem_path, '.semver')).to_s
 
     on_error do |exception|
       puts exception.backtrace
@@ -19,7 +21,7 @@ module Alpaca # The *CommandLineApplication* module provides command
     end
 
     desc 'Solutions search pattern'
-    default_value DEFAULT_SOLUTIONS_PATTERN
+    default_value ['**/*.sln', '**/Assets']
     flag [:p, :pattern]
 
     # desc 'Report to gerrit review'
@@ -28,82 +30,99 @@ module Alpaca # The *CommandLineApplication* module provides command
 
     desc 'Compile solution[s]'
     long_desc 'Compiling each solution founded from pattern in global options'
-    command :compile do |c|
-      c.desc 'Build solution in Debug mode'
-      c.switch :d, :debug
+    command :compile do |command|
+      command.desc 'Build solution in Debug mode'
+      command.switch :d, :debug
 
-      c.action do |global, options, _|
-        Application.new.compile(pattern: global[:p],
-                                debug: options[:d] || false)
+      command.action do |global, options, _|
+        Application.new.compile(global[:p], options[:d] || false)
       end
     end
 
     desc 'Test solution[s]'
     long_desc 'Testing each solution founded from pattern in global options'
-    command :test do |c|
-      c.desc 'Test solution in Debug mode'
-      c.switch :d, :debug, negatable: false
+    command :test do |command|
+      command.desc 'Test solution in Debug mode'
+      command.switch :d, :debug, negatable: false
 
-      c.desc 'Run tests with coverage'
-      c.switch [:c, :coverage]
+      command.desc 'Run tests with coverage'
+      command.switch [:c, :coverage]
 
-      c.desc 'Test category'
-      c.default_value 'all'
-      c.flag :t, :type, :category
+      command.desc 'Test category'
+      command.default_value 'all'
+      command.flag :t, :type, :category
 
-      c.action do |global, options, _|
-        Application.new.test(pattern: global[:p],
-                             debug: options[:d] || false,
-                             coverage: options[:c] || false,
-                             category: options[:t])
+      command.action do |global, options, _|
+        Application.new.test(global[:p],
+                             options[:d] || false,
+                             options[:c] || false,
+                             options[:t])
       end
     end
 
     desc 'Generate reports for solution[s]'
     long_desc 'Generate reports for all founded results for solutions'
-    command :report do |c|
-      c.desc 'Report category'
-      c.default_value 'all'
-      c.flag :c, :category
+    command :report do |command|
+      command.desc 'Report category'
+      command.default_value 'all'
+      command.flag :c, :category
 
-      c.action do |global, options, _|
-        Application.new.report(pattern: global[:p],
-                               category: options[:c])
+      command.action do |global, options, _|
+        Application.new.report(global[:p], options[:c])
       end
     end
 
     desc 'Create packages for solution[s]'
     long_desc 'Create new packages for solutions'
-    command :pack do |c|
-      c.action do |global, _, _|
-        Application.new.pack(pattern: global[:p])
+    command :pack do |command|
+      command.action do |global, _, _|
+        Application.new.pack(global[:p])
       end
     end
 
     desc 'Release packages for solution[s]'
     long_desc 'Update package to release version and push it'
-    command :release do |c|
-      c.desc 'Push to the source after released'
-      c.switch :p, :push, default_value: true
+    command :release do |command|
+      command.desc 'Push to the source after released'
+      command.switch :p, :push, default_value: true
 
-      c.action do |global, options, _|
-        Application.new.release(pattern: global[:p],
-                                push: options[:p])
+      command.action do |global, options, _|
+        Application.new.release(global[:p], options[:p])
       end
     end
 
     desc 'Push generated packages for solution[s]'
     long_desc 'Pushes last generated packages for all founded solutions'
-    command :push do |c|
-      c.desc 'Force push without checks if it has new changes'
-      c.switch :f, :force
+    command :push do |command|
+      command.desc 'Force push without checks if it has new changes'
+      command.switch :f, :force
 
-      c.action do |global, options, _|
-        Application.new.push(pattern: global[:p],
-                             force: options[:f])
+      command.action do |global, options, _|
+        Application.new.push(global[:p], options[:f])
+      end
+    end
+
+    desc 'Configure alpaca to your needs'
+    long_desc 'Save configuration into local/global conf files
+      for further usage'
+    command :configure do |command|
+      command.desc 'configure solution[s] from global pattern'
+      command.arg_name 'node1.node2.property=value', :multiple
+      command.command :local do |subcommand|
+        subcommand.action do |global, _, arguments|
+          Application.new.configure_local(global[:p], arguments)
+        end
+      end
+
+      command.desc 'configure alpaca in user wide sence'
+      command.arg_name 'node1.node2.property=value', :multiple
+      command.command :global do |subcommand|
+        subcommand.action do |_, _, arguments|
+          Application.new.configure_global(arguments)
+        end
       end
     end
   end
 end
 
-exit Alpaca::CommandLineApplication.run(ARGV)
+exit Alpaca::GliWrapper.run(ARGV)

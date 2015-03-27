@@ -1,6 +1,7 @@
 require 'bundler/setup'
 require 'bundler/gem_tasks'
 require 'rake/clean'
+require 'rbconfig'
 require 'rubygems'
 require 'rubygems/package_task'
 require 'rdoc/task'
@@ -41,6 +42,12 @@ desc 'Run features'
 Cucumber::Rake::Task.new(:features) do |t|
   opts = "features --format html -o #{CUKE_RESULTS} --format pretty -x"
   opts += " --tags #{ENV['TAGS']}" if ENV['TAGS']
+  case RbConfig::CONFIG['host_os']
+  when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+    opts += ' --tags @windows'
+  else
+    opts += ' --tags @linux'
+  end
   t.cucumber_opts =  opts
   t.fork = false
 end

@@ -1,11 +1,18 @@
 require 'alpaca/log'
+require 'alpaca/configuration'
+require 'alpaca/entities/visual_studio_project'
+require 'alpaca/tools/nuget'
+require 'alpaca/tools/msbuild'
 
 module Alpaca
-  # VisualStudio solution
+  # Class *VisualStudioSolution* provides solution
+  # representation and methods to manipulate it
   class VisualStudioSolution
+    BUILD_VERSION = '%M.%m.%p'
+
     include Log
 
-    attr_accessor :file, :folder, :net_version
+    attr_accessor :file, :dir, :net_version
     attr_accessor :format_version
     attr_accessor :visual_studio_version, :minimum_visual_studio_version
     attr_accessor :projects
@@ -14,13 +21,15 @@ module Alpaca
     #
     # +file+:: solution file
     #
-    #   s = Alpaca::Solution.new 'some.sln'
-    #     # => #<**:Solution:** @file="d:/some.sln" **>
+    #   s = Alpaca::VisualStudioSolution.new 'some.sln'
+    #     # => #<**:VisualStudioSolution:** @file="d:/some.sln" **>
     def initialize(file)
       @file = File.expand_path(file)
       fail "Can't find file #{@file}" unless File.exist?(@file)
-      @folder = File.dirname(@file)
+      @dir = File.dirname(@file)
       IO.readlines(@file).each { |line| initialize_data line }
+      @configuration = Configuration.new(self)
+      @semver = Versioning.find(@dir)
     end
 
     # Overrides *to_s* method to provide nice convertion to string
@@ -31,19 +40,18 @@ module Alpaca
       s += "\nVisual studio version: #{@visual_studio_version}"
       s += "\nMinimum visual studio version: #{@minimum_visual_studio_version}"
       s += "\nProjects:" unless @projects.empty?
-      @projects.each { |p| s += "\n\t{#{p[:name]};#{p[:file]}}" }
+      @projects.each { |p| s += "\n\t#{p}" }
       s += "\n------------"
       s
     end
 
     def compile(debug)
+      return if stub?
       info "compiling in #{debug ? 'debug' : 'release'} mode..."
-      # n_c, n_cmd = CONF['Nuget', s.file], 'restore'
-      # Alpaca::Nuget.new(n_c.exe)
-      # .execute({}, n_cmd, n_c.options(n_cmd), [s.file])
-      # LOG.info 'Building solution'
-      # m_c = CONF['MSBuild', s.file].with(property: { configuration: conf })
-      # Alpaca::MSBuild.new.execute(m_c, s.file)
+      build_version = @semver.to_s BUILD_VERSION
+      @projects.each { |project| project.update_version(build_version) }
+      Nuget.new(@configuration['Nuget']).restore(@file) if nuget?
+      MSBuild.new(@configuration['MSBuild']).build(@file, debug)
     end
 
     def test(debug, coverage, category)
@@ -86,7 +94,8 @@ module Alpaca
 
     def initialize_data(line)
       case line
-      when /^Project/ then (@projects ||= []) << parse_project(line)
+      when /^Project/
+        then (@projects ||= []) << VisualStudioProject.new(line, @dir)
       when /.*Format Version [\d\.]+/
         then @format_version = parse_version(line)
       when /^VisualStudioVersion/
@@ -96,17 +105,20 @@ module Alpaca
       end
     end
 
-    def chop(s)
-      s.gsub('"', '')
-    end
-
     def parse_version(s)
       s.gsub(/[\d\.]+/).first
     end
 
-    def parse_project(s)
-      items = s.gsub(/".*?"/).to_a
-      { id: chop(items[3]), name: chop(items[1]), file: chop(items[2]) }
+    def nuget?
+      !Dir.glob(@dir + '/**/packages.config').empty?
+    end
+
+    def stub?
+      solution_name = File.basename(@file, '.*')
+      (@configuration['no_build'] || []).each do |tag|
+        return true if solution_name.include?(tag)
+      end
+      false
     end
   end
 end

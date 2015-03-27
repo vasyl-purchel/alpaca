@@ -44,13 +44,13 @@ bundle exec ruby bin/alpaca help
 
 
 current todo list:
- ☐ make global configuration immutable from gem updates
-   ☐ leave current file as is
-   ☐ add new global configuration file
-   ☐ add 'alpaca config --global KEY' to configure global file
-   ☐ add 'alpaca config --local KEY' to configure local file in current directory
-   ☐ update ConfigFactory to look into template -> globa -> local
- ☐ update unit tests
+ ✔ make global configuration immutable from gem updates @done (15-04-01 21:37)
+   ✔ leave current file as is @done (15-04-01 21:37)
+   ✔ add new global configuration file @done (15-04-01 21:37)
+   ✔ add 'alpaca config global KEY' to configure global file @done (15-04-01 21:37)
+   ✔ add 'alpaca config local KEY' to configure local file in current directory @done (15-04-01 21:37)
+   ✔ update Configuration to look into template -> globa -> local @done (15-04-01 21:37)
+ ✔ update unit tests @done (15-04-01 21:37)
  ☐ fill AT's
  ☐ add documentation and fix offences
  ☐ think on gerrit stuff more :)

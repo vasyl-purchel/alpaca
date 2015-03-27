@@ -1,7 +1,9 @@
 require 'date'
+require 'ostruct'
 require 'rainbow'
 require 'rainbow/ext/string' unless String.method_defined?(:color)
 require 'alpaca/entities/font'
+require 'alpaca/configuration'
 
 module Alpaca
   # The *Log* module provides methods to log for levels:
@@ -55,7 +57,12 @@ module Alpaca
     private
 
     def log_configuration(level)
-      { 'prefix' => " #{level}\t> ", 'stamp' => true }
+      default =  { 'prefix' => " #{level}\t> ", 'stamp' => true }
+      solution_stub = OpenStruct.new
+      solution_stub.file = 'log'
+      solution_stub.dir = 'log'
+      @log_config ||= Configuration.new solution_stub
+      @log_config['Logger'][level] || default
     end
 
     def rainbowfy(msg, level)

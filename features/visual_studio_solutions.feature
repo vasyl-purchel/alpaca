@@ -1,3 +1,4 @@
+@windows
 Feature: Alpaca can work with Visual Studio solutions
   In order to work with visual studio solutions I need to be sure
   that alpaca can be used as a build tool for them
@@ -5,11 +6,12 @@ Feature: Alpaca can work with Visual Studio solutions
   Scenario: Alpaca compile solution
     When I run "alpaca compile"
     Then alpaca update AssemblyInfo files for test_data/sln1/TestSolution.sln
-    And alpaca build solution test_data/sln1/TestSolution.sln
-    And alpaca do not build solution test_data/sln1/TestSolution.nobuild.sln
+    And alpaca build file TestSolution.exe
+    And alpaca do not build file TestSolution.nobuild.exe
     And alpaca update AssemblyInfo files for test_data/sln2/SolutionName.sln
     And alpaca restore nuget packages for test_data/sln2/SolutionName.sln
-    And alpaca build solution test_data/sln2/SolutionName.sln
+    And alpaca build file ProjectName.dll
+    And alpaca build file ProjectName2.dll
     And the exit status should be 0
 
   Scenario: Alpaca test solution
