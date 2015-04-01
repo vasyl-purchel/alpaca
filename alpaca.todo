@@ -1,68 +1,14 @@
 tasks:
- ✔ nuget_restore @done (15-02-13 19:27)
- ✔ nuget_pack @done (15-02-13 19:27)
- ✔ nuget_install @done (15-02-13 19:27)
- ☐ nuget_promote
-
- ☐ artifactory_get_release_notes_and_version
- ☐ git_find_changes
- ☐ git_discard_changes
-
- ✔ solution_compile @done (15-02-13 19:27)
- ✔ solution_unit_test (+reports) @done (15-03-11 17:55)
- ☐ solution_service_test (+reports)
-
- ☐ versioning
-
- ✔ gerrit_review @done (15-02-13 19:27)
-
- ✘ jenkins_environment??? @cancelled (15-02-15 21:33)
-
-build: 
-  nuget_restore+
-  compile+
-  unit_test-
-build-ST:
-  nuget_restore+
-  compile+
-  unit_test-
-  service_test-
-build-package:
-  update_version-
-  compile+
-  discard_versioning_git_changes-
-  create_nuget_package+
-  push_nuget_package+
-  create_environment_file??
+ ☐ update .travis.yml to test gem with different ruby versions
+ ☐ fill readme file with how to use alpaca
+ ☐ push gem to https://rubygems.org and add version to readme
+     [![Gem Version](https://badge.fury.io/rb/rubocop.svg)](http://badge.fury.io/rb/rubocop)
 
 
-RUBYLIB=lib bin/alpaca help
-RUBYLIB=besttoolever/alpaca/lib besttoolever/alpaca/bin/alpaca compile --solution=cashinworldpay/src/Wonga.CashIn.WorldPay.sln
-
-bundle exec ruby bin/alpaca help
- bundle exec rake features
 
 
-current todo list:
- ✔ make global configuration immutable from gem updates @done (15-04-01 21:37)
-   ✔ leave current file as is @done (15-04-01 21:37)
-   ✔ add new global configuration file @done (15-04-01 21:37)
-   ✔ add 'alpaca config global KEY' to configure global file @done (15-04-01 21:37)
-   ✔ add 'alpaca config local KEY' to configure local file in current directory @done (15-04-01 21:37)
-   ✔ update Configuration to look into template -> globa -> local @done (15-04-01 21:37)
- ✔ update unit tests @done (15-04-01 21:37)
- ☐ fill AT's
- ☐ add documentation and fix offences
- ☐ think on gerrit stuff more :)
 
- commands:
-    ☐ compile
-    ☐ test
-    ☐ init
-        ☐ alpaca init GERRIT_REPO_NAME [-p GERRIT_PARENT_NAME] [-t SOLUTION_TYPE]
-    ☐ configure
-        ☐ alpaca configure KEY VALUE
-        ☐ KEY should have absolute path to the property that you want to configure 
-        ☐ examples:
-              ☐ alpaca configure local_config '#{sln}/config.yml'
-              ☐ alpaca configure Logger/:info/stamp false
+[![Coverage Status](http://img.shields.io/coveralls/bbatsov/rubocop/master.svg)](https://coveralls.io/r/bbatsov/rubocop)
+[![Code Climate](https://codeclimate.com/github/bbatsov/rubocop/badges/gpa.svg)](https://codeclimate.com/github/bbatsov/rubocop)
+[![Inline docs](http://inch-ci.org/github/bbatsov/rubocop.svg)](http://inch-ci.org/github/bbatsov/rubocop)
+[![Gratipay](http://img.shields.io/gratipay/bbatsov.svg)](https://www.gratipay.com/bbatsov/)

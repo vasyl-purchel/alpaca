@@ -21,11 +21,12 @@ Gem::Specification.new do |s|
   s.executables << 'alpaca'
   s.add_development_dependency('rake')
   s.add_development_dependency('rdoc')
-  s.add_development_dependency('cucumber', '~> 2.0.0.rc.3')
-  s.add_development_dependency('rspec')
+  s.add_development_dependency('cucumber', '~> 2.0.0')
+  s.add_development_dependency('rspec', '~> 3.2.0')
   s.add_development_dependency('fakefs')
-  s.add_development_dependency('rubocop')
+  s.add_development_dependency('rubocop', '~> 0.29.1')
   s.add_development_dependency('bundler', '~> 1.6')
-  s.add_runtime_dependency('gli', '2.12.2')
+  s.add_development_dependency('simplecov', '~> 0.7')
+  s.add_runtime_dependency('gli', '2.13.0')
   s.add_runtime_dependency('rainbow')
 end

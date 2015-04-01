@@ -70,6 +70,12 @@ RSpec::Core::RakeTask.new(:test) do |task|
   task.rspec_opts = '--color --format documentation'
 end
 
+desc 'Run RSpec with code coverage'
+task :coverage do
+  ENV['COVERAGE'] = 'true'
+  Rake::Task['test'].execute
+end
+
 require 'rubocop/rake_task'
 RuboCop::RakeTask.new(:rubocop) do |task|
   task.formatters = %w(simple html)

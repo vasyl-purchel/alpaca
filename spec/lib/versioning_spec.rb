@@ -1,5 +1,5 @@
+require 'spec_helper'
 require 'fakefs/spec_helpers'
-require 'alpaca/versioning'
 
 describe Alpaca::Versioning do
   include FakeFS::SpecHelpers

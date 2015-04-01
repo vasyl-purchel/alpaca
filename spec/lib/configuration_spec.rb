@@ -1,4 +1,4 @@
-require 'alpaca/configuration'
+require 'spec_helper'
 require 'fakefs/spec_helpers'
 require 'ostruct'
 

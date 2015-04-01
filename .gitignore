@@ -28,3 +28,6 @@ offences.html
 
 ## bash autocompletion
 .rake_t_cache
+
+## coverage
+/coverage/

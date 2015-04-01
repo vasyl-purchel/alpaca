@@ -9,6 +9,10 @@ module Alpaca
 
     include Log
 
+    # Runs compile against each found solution by pattern
+    #
+    # +[pattern]+:: pattern to find a solution(Array can be used)
+    # +[debug]+:: switch to compile solution in debug mode (false by default)
     def compile(pattern = DEFAULT_SOLUTIONS_PATTERN, debug = false)
       header 'Compile'
       Solutions.each(pattern) do |solution|
@@ -17,6 +21,12 @@ module Alpaca
       end
     end
 
+    # Runs tests against each found solution by pattern
+    #
+    # +[pattern]+:: pattern to find a solution(Array can be used)
+    # +[debug]+:: switch to run solution tests in debug mode (false by default)
+    # +[coverage]+:: switch to run coverage (false by default)
+    # +[category]+:: tests category - smoke, unit, service... (all by default)
     def test(pattern = DEFAULT_SOLUTIONS_PATTERN,
              debug = false,
              coverage = false,

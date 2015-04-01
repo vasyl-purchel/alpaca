@@ -1,5 +1,7 @@
 =alpaca
 {<img src="https://travis-ci.org/vasyl-purchel/alpaca.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/vasyl-purchel/alpaca]
+{<img src="https://coveralls.io/repos/vasyl-purchel/alpaca/badge.svg" alt="Coverage Status" />}[https://coveralls.io/r/vasyl-purchel/alpaca]
+
 
 Learning ruby
 
