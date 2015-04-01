@@ -18,6 +18,7 @@
 ## Environment normalisation:
 /.bundle/
 /lib/bundler/man/
+Gemfile.lock
 
 ## Cucumber test reports
 results.html
