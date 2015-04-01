@@ -84,7 +84,7 @@ describe Alpaca::Configuration do
       let(:properties) { ['hello.world=hi'] }
       let(:expected_content) { "---\nhello:\n  world: hi\n" }
 
-      it 'then it creates "d:\solution\.alpaca.conf" file' do
+      it 'then it creates "solution_directory\.alpaca.conf" file' do
         subject
         expect(File.exist? file).to be true
       end
@@ -137,12 +137,21 @@ describe Alpaca::Configuration do
             ":windows: '\#{solution_directory}'\n    "\
             ":linux: '/usr/alpaca'"
         end
-        let(:local_config) { File.expand_path 'c:\alpaca\.alpaca.conf' }
+        let(:solution_dir) do
+          require 'rbconfig'
+          case RbConfig::CONFIG['host_os']
+          when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+            'd:\solution'
+          else
+            '/home/solution'
+          end
+        end
+        let(:local_config) { File.expand_path "#{solution_dir}/.alpaca.conf" }
         let(:local_content) { "---\nTool:\n  property: new_value" }
         let(:solution) do
           solution = OpenStruct.new
-          solution.file = 'c:\alpaca\alpaca.sln'
-          solution.dir = 'c:\alpaca'
+          solution.file = File.join solution_dir, 'alpaca.sln'
+          solution.dir = solution_dir
           solution
         end
         subject { Alpaca::Configuration.new solution }
@@ -183,7 +192,7 @@ describe Alpaca::Configuration do
 
         it 'detokenize solution variable #{solution_directory}' do
           value = subject.instance_variable_get(:@configuration)
-          expect(value['Tool']['property2']).to eq 'c:\alpaca'
+          expect(value['Tool']['property2']).to eq solution.dir
         end
       end
     end

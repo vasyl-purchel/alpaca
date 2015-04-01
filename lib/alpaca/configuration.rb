@@ -97,7 +97,6 @@ module Alpaca
     # +properties+:: Array of properties 'path.to.property=value'
     def set(properties)
       File.new(@file, 'w+').close unless File.exist? @file
-      puts @file
       config = YAML.load(File.open(@file)) || {}
       properties.each do |property|
         Configuration.set_property(config, property)
