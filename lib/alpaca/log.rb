@@ -5,76 +5,87 @@ require 'rainbow/ext/string' unless String.method_defined?(:color)
 require 'alpaca/entities/font'
 require 'alpaca/configuration'
 
+require 'logger'
+
 module Alpaca
-  # The *Log* module provides methods to log for levels:
-  # - :info
-  # - :warns
-  # - :errors
-  # - :headers
-  # - :log
-  module Log
-    DATETIME_LOG = '%FT%T.%L' unless const_defined?(:DATETIME_LOG)
+  # The *RainbowifyLogger* class is extending ruby logger
+  # with _header_ and _puts_ methods and add colors to logs
+  class RainbowifyLogger < Logger
+    SEVERITIES = %w(DEBUG INFO WARN ERROR FATAL PUTS HEADER)
 
-    # Logs message with :info format
-    #
-    # +msg+:: message to log
-    def info(msg)
-      log(msg, :info)
+    # Creates instance of logger with STDOUT as IO object
+    # for logger and adds RainbowifyFormatter as a formatter
+    def initialize
+      super(STDOUT)
+      @formatter = RainbowifyFormatter.new
     end
 
-    # Logs message with :warn format
-    #
-    # +msg+:: message to log
-    def warn(msg)
-      log(msg, :warn)
+    # Override logger.format_severity in order to use our own severities
+    def format_severity(severity)
+      SEVERITIES[severity] || 'ANY'
     end
 
-    # Logs message with :error format
+    # Log nice ASCII art styled header
     #
-    # +msg+:: message to log
-    def error(msg)
-      log(msg, :error)
+    # +progname+:: program name
+    # accepts &block
+    def header(progname = nil, &block)
+      add(6, nil, progname, &block)
     end
 
-    # Logs artified message with :header format
+    # Log nice ASCII art styled header
     #
-    # +msg+:: header to log(use short headers so they fit screen good)
-    def header(msg)
-      log(msg, :header)
+    # +progname+:: program name
+    # accepts &block
+    def puts(progname = nil, &block)
+      add(5, nil, progname, &block)
     end
+  end
 
-    # Logs message
-    #
-    # +msg+:: message to log
-    # +[level]+:: specify log level, (:log by default)
-    def log(msg, level = :log)
-      config = log_configuration(level)
-      m = config['prefix'] + msg.to_s
-      m = (DateTime.now.strftime(DATETIME_LOG).to_s + m) if config['stamp']
-      puts rainbowfy(artify(m, config), config)
+  # Class *RainbowifyFormatter* provides formatting for standart
+  # ruby logger by adding colors(rainbow gem) and ASCII art headers
+  # for HEADER (6) severity
+  class RainbowifyFormatter < Logger::Formatter
+    def call(severity, datetime, _progname, message)
+      date_format = datetime.strftime('%FT%T.%L')
+      result = "[#{date_format}] #{severity}: #{message}"
+      result = "#{message}" if severity == 'PUTS'
+      result = "\x00#{message}" if severity == 'HEADER'
+      config = configuration(severity)
+      rainbowfy(artify(result, config), config)
     end
 
     private
 
-    def log_configuration(level)
-      default =  { 'prefix' => " #{level}\t> ", 'stamp' => true }
-      solution_stub = OpenStruct.new
-      solution_stub.file = 'log'
-      solution_stub.dir = 'log'
-      @log_config ||= Configuration.new solution_stub
-      @log_config['Logger'][level] || default
+    def configuration(severity)
+      case severity
+      when 'DEBUG' then { color: :black, background: :green }
+      when 'INFO' then { color: :green }
+      when 'WARN' then { color: :yellow }
+      when 'ERROR' then { color: :red }
+      when 'FATAL' then { color: :red, bright: true }
+      else extended_configuration severity
+      end
     end
 
-    def rainbowfy(msg, level)
-      msg = msg.color(level['color']) if level['color']
-      msg = msg.background(level['background']) if level['background']
-      msg = msg.bright if level['bright']
+    def extended_configuration(severity)
+      case severity
+      when 'PUTS' then { color: :white, background: :green }
+      when 'HEADER' then { color: :green, bright: true, font: 'doom' }
+      else { color: :blue }
+      end
+    end
+
+    def rainbowfy(msg, config)
+      msg = msg.color(config[:color]) if config[:color]
+      msg = msg.background(config[:background]) if config[:background]
+      msg = msg.bright if config[:bright]
       msg
     end
 
-    def artify(msg, level)
-      return msg unless level['font'] && level['artify']
-      font = Font.new(level['font'])
+    def artify(msg, config)
+      return msg unless config[:font]
+      font = Font.new(config[:font])
       result = artify_message(msg, font)
       result.join("\n").gsub(/\0/, '').gsub(font.hard_blank, ' ')
     end
@@ -90,6 +101,16 @@ module Alpaca
         end
       end
       result
+    end
+  end
+
+  # Module *Log* adds logger
+  module Log
+    attr_writer :log
+
+    # Method gives access to logger with lazy initialization
+    def log
+      @log ||= RainbowifyLogger.new
     end
   end
 end

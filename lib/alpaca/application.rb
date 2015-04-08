@@ -3,7 +3,7 @@ require 'alpaca/solutions'
 
 module Alpaca
   # Class *Application* provides methods that can
-  # be used by CLI and from REPL sessions
+  # be used by CLI
   class Application
     DEFAULT_SOLUTIONS_PATTERN = ['**/*.sln', '**/Assets']
 
@@ -14,9 +14,9 @@ module Alpaca
     # +[pattern]+:: pattern to find a solution(Array can be used)
     # +[debug]+:: switch to compile solution in debug mode (false by default)
     def compile(pattern = DEFAULT_SOLUTIONS_PATTERN, debug = false)
-      header 'Compile'
+      log.header 'Compile'
       Solutions.each(pattern) do |solution|
-        log solution
+        log.puts solution
         solution.compile(debug)
       end
     end
@@ -31,52 +31,52 @@ module Alpaca
              debug = false,
              coverage = false,
              category = 'all')
-      header 'Test'
+      log.header 'Test'
       Solutions.each(pattern) do |solution|
-        log solution
+        log.puts solution
         solution.test(debug, coverage, category)
       end
     end
 
     def report(pattern = DEFAULT_SOLUTIONS_PATTERN, category = 'all')
-      header 'Report'
+      log.header 'Report'
       Solutions.each(pattern) do |solution|
-        log solution
+        log.puts solution
         solution.report(category)
       end
     end
 
     def pack(pattern = DEFAULT_SOLUTIONS_PATTERN)
-      header 'Pack'
+      log.header 'Pack'
       Solutions.each(pattern) do |solution|
-        log solution
+        log.puts solution
         solution.pack
       end
     end
 
     def release(pattern = DEFAULT_SOLUTIONS_PATTERN, push = true)
-      header 'Release'
+      log.header 'Release'
       Solutions.each(pattern) do |solution|
-        log solution
+        log.puts solution
         solution.release(push)
       end
     end
 
     def push(pattern = DEFAULT_SOLUTIONS_PATTERN, force = false)
-      header 'Push'
+      log.header 'Push'
       Solutions.each(pattern) do |solution|
-        log solution
+        log.puts solution
         solution.push(force)
       end
     end
 
     def configure_global(properties)
-      header 'Configure'
+      log.header 'Configure'
       Configuration.set(properties)
     end
 
     def configure_local(pattern = DEFAULT_SOLUTIONS_PATTERN, properties)
-      header 'Configure'
+      log.header 'Configure'
       Solutions.each(pattern) do |solution|
         log solution
         Configuration.new(solution).set(properties)

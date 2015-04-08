@@ -9,28 +9,28 @@ module Alpaca
     end
 
     def compile(debug)
-      info "Compiling in #{debug ? 'debug' : 'release'} mode"
+      log.info "Compiling in #{debug ? 'debug' : 'release'} mode"
     end
 
     def test(debug, _, category)
       mode = debug ? 'Debug' : 'Release'
-      info "testing in #{mode} mode for category #{category}.."
+      log.info "testing in #{mode} mode for category #{category}.."
     end
 
     def report(category)
-      info "generating report for category #{category}.."
+      log.info "generating report for category #{category}.."
     end
 
     def pack
-      info 'creating packages :O'
+      log.info 'creating packages :O'
     end
 
     def release(push)
-      info "releasing package#{push ? ' and pushing it' : ''}"
+      log.info "releasing package#{push ? ' and pushing it' : ''}"
     end
 
     def push(force)
-      info "#{force ? 'force ' : ''}pushing package"
+      log.info "#{force ? 'force ' : ''}pushing package"
     end
   end
 end

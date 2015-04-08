@@ -47,7 +47,7 @@ module Alpaca
 
     def compile(debug)
       return if stub?
-      info "compiling in #{debug ? 'debug' : 'release'} mode..."
+      log.info "compiling in #{debug ? 'debug' : 'release'} mode..."
       build_version = @semver.to_s BUILD_VERSION
       @projects.each { |project| project.update_version(build_version) }
       Nuget.new(@configuration['Nuget']).restore(@file) if nuget?

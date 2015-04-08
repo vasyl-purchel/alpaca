@@ -15,7 +15,7 @@ module Alpaca
     end
 
     def run(call)
-      info(">> #{call}")
+      log.info(">> #{call}")
       result = system(call)
       fail "unknown command \"#{call}\"" if result.nil?
       fail "failed with #{$CHILDSTATUS.exitstatus}" if result == false
