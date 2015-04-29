@@ -8,6 +8,7 @@
 [Rr]elease
 [Oo]bj
 *.suo
+*.ide
 
 ## Documentation cache and generated files:
 /.yardoc/
@@ -32,3 +33,16 @@ offences.html
 
 ## coverage
 /coverage/
+
+## alpaca generated data
+test_data/TestResults
+test_data/sln2/packages
+**/.tests
+**/.output
+*.nuspec
+CHANGES.txt
+README.txt
+
+## mkmf (search tool in $PATH variable)
+mkmf.log
+

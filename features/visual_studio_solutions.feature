@@ -5,43 +5,39 @@ Feature: Alpaca can work with Visual Studio solutions
 
   Scenario: Alpaca compile solution
     When I run "alpaca compile"
-    Then alpaca update AssemblyInfo files for test_data/sln1/TestSolution.sln
     And alpaca build file TestSolution.exe
     And alpaca do not build file TestSolution.nobuild.exe
-    And alpaca update AssemblyInfo files for test_data/sln2/SolutionName.sln
     And alpaca restore nuget packages for test_data/sln2/SolutionName.sln
     And alpaca build file ProjectName.dll
     And alpaca build file ProjectName2.dll
     And the exit status should be 0
 
   Scenario: Alpaca test solution
+    When I run "alpaca test"
+    And solution has failing unit test
+    Then the exit status should be 256
+
+  Scenario: Alpaca test with coverage solution
     When I run "alpaca test -c"
-    Then alpaca run tests for test_data/sln2/SolutionName.sln
-    And alpaca generate unit test results test_data/sln2/TR/tests.xml
-    And alpaca generate test coverage summary for test_data/sln2/TR/coverage.xml
+    Then alpaca generate unit test results test_data/sln2/.tests/UnitTestsResult.xml
+    And alpaca generate test coverage summary test_data/sln2/.tests/coverage.xml
     And the exit status should be 0
 
   Scenario: Alpaca report tests results
     When I run "alpaca report"
-    Then alpaca generate coverage report test_data/sln1/TR/index.html
+    Then alpaca generate unit tests report test_data/sln2/.tests/UnitTestsResult.html
+    Then alpaca generate coverage report test_data/sln2/.tests/index.htm
 
   Scenario: Alpaca pack solution
     When I run "alpaca pack"
-    Then alpaca creates Sln1Tool.0.0.1.alpha.nupkg
-    And alpaca commit test_data/sln1/.semver file to git
-    And alpaca creates Sln2Project.1.0.0.rc.nupkg
-    And alpaca commit test_data/sln1/.semver file to git
+    Then alpaca creates test_data/sln1/.output/TestData.FirstSolution.0.0.1-alpha.nupkg
+    Then alpaca creates test_data/sln1/.output/TestData.FirstSolution.0.0.1-alpha.symbols.nupkg
+    And alpaca creates test_data/sln2/.output/TestData.SecondSolution.2.0.11.nupkg
+    And alpaca creates test_data/sln2/.output/TestData.SecondSolution.2.0.11.symbols.nupkg
     And the exit status should be 0
 
+  @teardown_changes
   Scenario: Alpaca release package
-    When I run "alpaca -p='**/TestSolution.sln' release --no-push"
-    Then alpaca download latest package Sln1Tool.0.0.1.alpha
-    And alpaca repack it as Sln1Tool.0.0.1
-    And alpaca change inner Sln1Tool.nuspec version to 0.0.1
-    And the exit status should be 0
-
-  Scenario: Alpaca push package
-    When I run "alpaca push"
-    Then alpaca push package Sln1Tool.0.0.1.alpha.nupkg
-    And alpaca push package Sln1Tool.0.0.1.alpha.nupkg
+    When I run "alpaca -p '**/TestSolution.sln' release --no-push"
+    Then alpaca creates test_data/sln1/.output/TestData.FirstSolution.0.0.1.nupkg
     And the exit status should be 0

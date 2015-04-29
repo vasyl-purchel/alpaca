@@ -1,32 +1,28 @@
 #!/usr/bin/env ruby
 require 'gli'
-require 'alpaca'
+require 'alpacabuildtool'
 
-module Alpaca
-  # The *GliWrapper* module provides command
-  # line interface by using GLI::App
+module AlpacaBuildTool
+  ##
+  # The *GliWrapper* module provides command line interface by using GLI::App
   module GliWrapper
     include GLI::App
     extend self
 
-    program_desc 'is a build tool for Visual Studio and Unity3D solutions'
+    program_desc 'is a build tool for Visual Studio solutions'
     subcommand_option_handling :normal
     arguments :strict
     gem_path = File.join(File.expand_path(File.dirname(__FILE__)), '..')
     version Versioning.parse(File.join(gem_path, '.semver')).to_s
 
     on_error do |exception|
-      puts exception.backtrace
+      puts exception.backtrace if ENV['DEV'] == 'true'
       true
     end
 
     desc 'Solutions search pattern'
-    default_value ['**/*.sln', '**/Assets']
+    default_value '**/*.sln'
     flag [:p, :pattern]
-
-    # desc 'Report to gerrit review'
-    # default_value false
-    # switch :g, :gerrit
 
     desc 'Compile solution[s]'
     long_desc 'Compiling each solution founded from pattern in global options'
@@ -34,8 +30,13 @@ module Alpaca
       command.desc 'Build solution in Debug mode'
       command.switch :d, :debug
 
+      command.desc 'Update project versions'
+      command.switch :u, :update
+
       command.action do |global, options, _|
-        Application.new.compile(global[:p], options[:d] || false)
+        Application.new.compile(global[:p],
+                                debug: options[:d] || false,
+                                update_version: options[:u] || false)
       end
     end
 
@@ -48,15 +49,15 @@ module Alpaca
       command.desc 'Run tests with coverage'
       command.switch [:c, :coverage]
 
-      command.desc 'Test category'
+      command.desc 'Test type'
       command.default_value 'all'
-      command.flag :t, :type, :category
+      command.flag :t, :type
 
       command.action do |global, options, _|
         Application.new.test(global[:p],
-                             options[:d] || false,
-                             options[:c] || false,
-                             options[:t])
+                             debug: options[:d] || false,
+                             coverage: options[:c] || false,
+                             type: options[:t])
       end
     end
 
@@ -65,18 +66,27 @@ module Alpaca
     command :report do |command|
       command.desc 'Report category'
       command.default_value 'all'
-      command.flag :c, :category
+      command.flag :t, :type
 
       command.action do |global, options, _|
-        Application.new.report(global[:p], options[:c])
+        Application.new.report(global[:p], type: options[:t])
       end
     end
 
     desc 'Create packages for solution[s]'
     long_desc 'Create new packages for solutions'
     command :pack do |command|
-      command.action do |global, _, _|
-        Application.new.pack(global[:p])
+      command.desc 'Pack package in Debug mode'
+      command.switch :d, :debug, negatable: false, default_value: false
+
+      command.desc 'Push package after it created if it contains changes'
+      command.switch :p, :push, default_value: false
+
+      command.desc 'Force push package after it created'
+      command.switch :f, :force, default_value: false
+
+      command.action do |global, options, _|
+        Application.new.package(global[:p], options)
       end
     end
 
@@ -86,19 +96,23 @@ module Alpaca
       command.desc 'Push to the source after released'
       command.switch :p, :push, default_value: true
 
+      command.desc 'Force push package after it created'
+      command.switch :f, :force, default_value: false
+
       command.action do |global, options, _|
-        Application.new.release(global[:p], options[:p])
+        Application.new.release(global[:p], options)
       end
     end
 
-    desc 'Push generated packages for solution[s]'
-    long_desc 'Pushes last generated packages for all founded solutions'
-    command :push do |command|
-      command.desc 'Force push without checks if it has new changes'
-      command.switch :f, :force
+    desc 'Update solution[s] versions'
+    long_desc 'Update version for each solution'
+    command :update do |command|
+      command.desc 'Version dimension to be updated(patch, minor..)'
+      command.default_value 'patch'
+      command.flag :d, :dimension
 
       command.action do |global, options, _|
-        Application.new.push(global[:p], options[:f])
+        Application.new.update(global[:p], options)
       end
     end
 
@@ -125,4 +139,4 @@ module Alpaca
   end
 end
 
-exit Alpaca::GliWrapper.run(ARGV)
+exit AlpacaBuildTool::GliWrapper.run(ARGV)

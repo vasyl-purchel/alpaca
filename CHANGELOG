@@ -1,0 +1,18 @@
+= Version 1.0.0-rc
+  * Rebrand to alpacabuildtool due to conflict with existing alpaca gem
+  * Complete functionality
+  * Feature tests coverage for commands
+  * Specs coverage for main parts
+  * Automatic downloading of tools
+  * Generation of nuspec, readme, changelog files for packages
+  * Update rubocop to v0.30.1
+  * Tools are classes and not modules
+  * No Unity3D stubs/support
+  * Use ruby logger with beautifiers like *header* and *puts*
+  * New structure of the project
+  * New specs folder structure to match lib folder
+  * Complete documentation
+
+= Version 0.0.1-alpha
+  * in development
+  * basic structure and functionality

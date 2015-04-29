@@ -1,0 +1,9 @@
+tasks:
+ ☐ decouple from tools (configure test_tool with formatter type, parameters
+   and so on from configs instead of NUnit class)
+ ☐ add nunit tests categories (not types like unit, service, ...
+   but MetaTestsAttribute, CoreTestsAttribute...)
+ ☐ add service tests running:
+    ☐ eval 'service_tests_script' to update service configuration
+    ☐ run 'exe' in child process
+    ☐ run 'service' type project tests

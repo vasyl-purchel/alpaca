@@ -1,12 +1,3 @@
-Then(/^alpaca update AssemblyInfo files for (.*?)$/) do |solution_file|
-  solution_dir = File.dirname File.expand_path(solution_file)
-  git_changes = `git diff --name-only #{solution_dir}`.split("\n")
-  expect(git_changes.length).to be >= 1
-  git_changes.each do |change|
-    expect(change.include? 'AssemblyInfo').to eq true
-  end
-end
-
 Then(/^alpaca build file (.*?)$/) do |project_file|
   proj = File.basename(project_file, '.*')
   build_project = /#{proj} -> (.*?)\\#{project_file}/
@@ -21,47 +12,36 @@ end
 
 Then(/^alpaca restore nuget packages for (.*?)$/) do |solution_file|
   solution_dir = File.dirname(File.expand_path(solution_file))
-  nuget_call = /Nuget.exe  restore  #{File.expand_path(solution_file)}/
+  nuget_call = /Nuget.exe restore #{File.expand_path(solution_file)}/
   expect(@call_result.match(nuget_call)).to_not be nil
   expect(Dir.glob(solution_dir + '/packages/*').count).to be > 0
 end
 
-Then(/^alpaca run tests for (.*?)$/) do |solution_file|
-  pending "check that tests were runned for #{solution_file}"
+Then(/^solution has failing unit test$/) do
+  # nothing to do here as there is failing unit test in solution 2
+  # step is used only as a marker in reports
 end
 
 Then(/^alpaca generate unit test results (.*?)$/) do |results_file|
-  pending "check that #{results_file} was generated"
+  expect(File.exist?(results_file)).to be true
 end
 
-Then(/^alpaca generate test coverage summary for (.*?)$/) do |summary_file|
-  pending "check that #{summary_file} was generated"
+Then(/^alpaca generate test coverage summary (.*?)$/) do |summary_file|
+  expect(File.exist?(summary_file)).to be true
+end
+
+Then(/^alpaca generate unit tests report (.*?)$/) do |report_file|
+  expect(File.exist?(report_file)).to be true
 end
 
 Then(/^alpaca generate coverage report (.*?)$/) do |index_file|
-  pending "check that #{index_file} was generated"
+  expect(File.exist?(index_file)).to be true
 end
 
-Then(/^alpaca creates (.*?)$/) do |package|
-  pending "check that #{package} was created"
+Then(/^alpaca creates (.*?)$/) do |package_file|
+  expect(File.exist?(package_file)).to be true
 end
 
-Then(/^alpaca commit (.*?) file to git$/) do |semver_file|
-  pending "check that #{semver_file} was committed"
-end
-
-Then(/^alpaca download latest package (.*?)$/) do |package|
-  pending "check that #{package} was downloaded"
-end
-
-Then(/^alpaca repack it as (.*?)$/) do |package|
-  pending "check that it was repacked as #{package}"
-end
-
-Then(/^alpaca change inner (.*?) version to ([\d\.]+)$/) do |file, version|
-  pending "check that #{file} in generated package contains #{version} version"
-end
-
-Then(/^alpaca push package (.*?)$/) do |package|
-  pending "check that #{package} was pushed"
+AfterStep('@teardown_changes') do
+  `git stash save --keep-index --include-untracked`
 end

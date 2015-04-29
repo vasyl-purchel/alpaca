@@ -3,10 +3,10 @@ Style/ModuleFunction:
     - bin/alpaca
 Style/ClassVars:
   Exclude:
-    - lib/alpaca/configuration.rb
+    - lib/alpacabuildtool/configuration.rb
 AllCops:
   Exclude:
     - vendor/**/*
-Style/GlobalVars:
+Lint/Eval:
   Exclude:
-    - lib/alpaca/tools/console_tool.rb
+    - lib/alpacabuildtool/entities/xml_node.rb

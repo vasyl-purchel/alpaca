@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace ProjectName.SomeFolderInProject
 {
-    class SomeClass
+    public class SomeClass
     {
+        public int DoSomeWork(int a, int b)
+        {
+            return a + b;
+        }
     }
 }

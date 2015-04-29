@@ -1,5 +1,5 @@
 When(/^I run "(.*?)"$/) do |command_line|
-  call = "#{@prefix} #{command_line}"
+  call = "#{prefix}#{command_line}"
   @call_result = `#{call}`
 end
 
