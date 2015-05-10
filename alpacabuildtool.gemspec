@@ -1,7 +1,7 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'alpacabuildtool/versioning/versioning'
-version = ((AlpacaBuildTool::Versioning.find).to_s '%M.%m.%p.%s').gsub('-', '')
+version = ((AlpacaBuildTool::Versioning.find).to_s '%M.%m.%p%s').gsub('-', '.')
 
 Gem::Specification.new do |s|
   s.name = 'alpacabuildtool'
