@@ -8,7 +8,7 @@
 [![Gem Version](https://badge.fury.io/rb/alpacabuildtool.svg)](http://badge.fury.io/rb/alpacabuildtool)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/vasyl-purchel/alpaca/master/lib/alpaca/data/logo.jpg" alt="Logo"/>
+  <img src="https://raw.githubusercontent.com/vasyl-purchel/alpaca/master/lib/alpacabuildtool/data/logo.jpg" alt="Logo"/>
 </p>
 
 **AlpacaBuildTool** is a Ruby gem with **alpaca** command line interface that
